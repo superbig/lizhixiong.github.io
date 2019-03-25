@@ -266,7 +266,7 @@ Especially the section:</p>
 <p>Please <a class="github-button" href="https://github.com/huweihuang/hexo-theme-huweihuang" data-icon="octicon-star" aria-label="Star huweihuang/hexo-theme-huweihuang on GitHub" target="_blank" rel="noopener">Star</a> this Project if you like it! <a class="github-button" href="https://github.com/huweihuang" aria-label="Follow @huweihuang on GitHub" target="_blank" rel="noopener">Follow</a> would also be appreciated!<br>
 Peace!</p>
 
-                
+
 
                 <hr>
                 <!-- Pager -->
@@ -284,14 +284,16 @@ Peace!</p>
                 <br>
                 <!--分享-->
                 
-                    <div class="social-share"  data-wechat-qrcode-helper="" align="center"></div>
-                    <!--  css & js -->
-                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
-                    <script src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                <div class="social-share" data-wechat-qrcode-helper="" align="center"></div>
+                <!--  css & js -->
+                <link rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                <script
+                    src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
                 
                 <!--分享-->
-                <br>                       
-                
+                <br>
+
                 <!-- require APlayer -->
                 
 
@@ -310,7 +312,19 @@ Peace!</p>
                 
 
             </div>
-            
+
+
+            <!--PC版-->
+            <div id="SOHUCS"></div>
+            <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js"></script>
+            <script type="text/javascript">
+                window.changyan.api.config({
+                    appid: 'cyu9nvd1H',
+                    conf: 'prod_d3b08d9d4b47e765df1a513bcd38865c'
+                });
+            </script>
+
+
             <!-- Tabe of Content -->
             <!-- Table of Contents -->
 
@@ -326,7 +340,7 @@ Peace!</p>
       </aside>
     
 
-                
+
             <!-- Sidebar Container -->
             <div class="
                 col-lg-8 col-lg-offset-2
@@ -339,8 +353,9 @@ Peace!</p>
                     <!-- no hr -->
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
-                       
-                          <a class="tag" href="/tags/#Hexo" title="Hexo">Hexo</a>
+                        
+                        <a class="tag" href="/tags/#Hexo"
+                            title="Hexo">Hexo</a>
                         
                     </div>
                 </section>
@@ -353,11 +368,11 @@ Peace!</p>
                 <ul class="list-inline">
 
                     
-                        <li><a href="https://www.cnblogs.com/fly-100/" target="_blank">博客园 李志雄</a></li>
+                    <li><a href="https://www.cnblogs.com/fly-100/" target="_blank">博客园 李志雄</a></li>
                     
-                        <li><a href="http://dockone.io/people/胡伟煌" target="_blank">DockOne 李志雄</a></li>
+                    <li><a href="http://dockone.io/people/胡伟煌" target="_blank">DockOne 李志雄</a></li>
                     
-                        <li><a href="https://yq.aliyun.com/u/huweihuang" target="_blank">阿里云栖社区 李志雄</a></li>
+                    <li><a href="https://yq.aliyun.com/u/huweihuang" target="_blank">阿里云栖社区 李志雄</a></li>
                     
                 </ul>
                 
@@ -376,21 +391,21 @@ Peace!</p>
 <!-- async load function -->
 <script>
     function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
     }
 </script>
 <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
 <script>
-    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js", function () {
         anchors.options = {
-          visible: 'hover',
-          placement: 'left',
-          icon: 'ℬ'
+            visible: 'hover',
+            placement: 'left',
+            icon: 'ℬ'
         };
         anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
     })
@@ -398,15 +413,14 @@ Peace!</p>
 <style>
     /* place left on bigger screen */
     @media all and (min-width: 800px) {
-        .anchorjs-link{
+        .anchorjs-link {
             position: absolute;
             left: -0.75em;
             font-size: 1.1em;
-            margin-top : -0.1em;
+            margin-top: -0.1em;
         }
     }
 </style>
-
 
 
     <!-- Footer -->
