@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          排序算法总结 - 追风人 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://www.lizhixiong.net/article/排序算法总结/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#算法" title="算法">算法</a>
+                            
+                        </div>
+                        <h1>排序算法总结</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 追风人 on
+                            2018-04-12
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">追风人</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h2 id="一冒泡排序">一，冒泡排序</h2>
+<p>给定一个具有n个元素的数组，每次找出一个当前最大的元素，找n次就能把数组按从小到大的顺序排列，我们可以把“每次找一个当前最大的元素”看成是一次“冒泡”。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">for (int i = 0; i &lt; list.Count; i++)</span><br><span class="line">     &#123;</span><br><span class="line">         for (int j = i+1; j &lt; list.Count; j++)</span><br><span class="line">         &#123;</span><br><span class="line">             if (list[j] &gt; list[i])</span><br><span class="line">             &#123;</span><br><span class="line">                 int temp = list[j];</span><br><span class="line">                 list[j] = list[i];</span><br><span class="line">                 list[i] = temp;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+<p>把上面的6行代码的执行消耗用c1,c2,c3,c4,c5,c6来表示，那么算法的最坏情况的总消耗T(n)为：</p>
+<p>T(n) = c1(n+1) + (c2*(n+1)n/2) + (c3+c4+c5+c6)((n-1)n/2)</p>
+<p>=c1(n+1) + c2(n^2/2 + n/2) + (c3+c4+c5+c6)(n^2/2 - n/2)</p>
+<p>(把1/2用0.5代替)</p>
+<p>=0.5(c2+c3+c4+c5+c6)n^2  +  (c1+0.5(c2-c3-c4-c5-c6))n  + c1</p>
+<p>由此可知，最坏情况下冒泡排序的消耗是关于n²的函数，即：O(n²)</p>
+<h2 id="二插入排序">二，插入排序</h2>
+<p>按顺序每次拿出一个元素依次和他前面的元素进行对比，遇到比它小的就向后移动一位，遇到比它大的就不在进行对比，并把这个元素插入到这个比它大的元素的前一位。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">for (int i = 1; i &lt; list.Count; i++)</span><br><span class="line">     &#123;</span><br><span class="line">         int key = list[i];</span><br><span class="line">         int j = i - 1;</span><br><span class="line">         while (j &gt;= 0 &amp;&amp; list[j] &gt; key)</span><br><span class="line">         &#123;</span><br><span class="line">             list[j + 1] = list[j];</span><br><span class="line">             j--;</span><br><span class="line">         &#125;</span><br><span class="line">         list[j + 1] = key;</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+<p>T(n) = (c1+c2+c3+c7)n + c4((n-1)(n+2)/2) + c5((n-1)n/2) + c6((n-1)n/2)</p>
+<p>最高阶项为n²</p>
+<p>由此可知，最坏情况下插入排序的时间复杂度是关于n²的函数，即：O(n²)</p>
+<h2 id="三希尔排序">三，希尔排序</h2>
+<ol>
+<li>插入排序在前向遍历的时候会把符合条件的元素逐个后移一位，这个后移操作在算法的最坏情况下比较费。</li>
+<li>对于插入排序中已经排好序的数组算法复杂度可以降为O(n)，效率比较高。</li>
+</ol>
+<p>基于这两点，就有了“优化版的插入排序”，这就是希尔排序。希尔排序的思想是：</p>
+<ol>
+<li>每次只对数组中固定间隔的元素排序，间隔递减至1时完成最终排序。（递减的方式可选，不同的递减方式又不用的效率。本例使用“长度/=2”的递减方式），</li>
+<li>对固定间隔的元素进行插入排序</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">int count = nums.Count;</span><br><span class="line">   for (int gap = count / 2; gap &gt; 0; gap /= 2)</span><br><span class="line">   &#123;</span><br><span class="line">       for (int i = 0; i &lt; count; i += gap)</span><br><span class="line">       &#123;</span><br><span class="line">           int temp = nums[i];</span><br><span class="line">           int j;</span><br><span class="line">           for (j = i; j &gt;= gap &amp;&amp; temp &lt; nums[j - gap]; j -= gap)</span><br><span class="line">           &#123;</span><br><span class="line">               nums[j] = nums[j - gap];</span><br><span class="line">           &#125;</span><br><span class="line">           nums[j] = temp;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>开始时，gap取值较大，子序列中的元素较少，排序速度快，克服了直接插入排序的缺点；其次，gap值逐渐变小后，虽然子序列的元素逐渐变多，但大多元素已基本有序，所以继承了直接插入排序的优点，能以近线性的速度排好序。</p>
+<h2 id="四选择排序">四，选择排序</h2>
+<ol>
+<li>用一个游标把待排序的数组分成两部分，游标的左侧是排好序的，游标的右侧是未排序的。</li>
+<li>游标依次向右移动，每次移动从右侧未排序的数组中找一个最小值，依次放到右侧。移动到倒数第二个位置停止。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">int count = nums.Count;</span><br><span class="line">   for (int i = 0; i &lt; count - 1; i++)</span><br><span class="line">   &#123;</span><br><span class="line">       int min = i;</span><br><span class="line">       for (int j = i + 1; j &lt; count; j++)</span><br><span class="line">       &#123;</span><br><span class="line">           if (nums[j] &lt; nums[min])</span><br><span class="line">           &#123;</span><br><span class="line">               min = j;</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line">       if (min != i)</span><br><span class="line">       &#123;</span><br><span class="line">           int temp = nums[i];</span><br><span class="line">           nums[i] = nums[min];</span><br><span class="line">           nums[min] = temp;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>时间复杂度为O(n²)，空间复杂度为O(1)，排序是不稳定的（把最小值交换到已排序的末尾导致的），每次都能确定一个元素所在的最终位置，比较次数与初始序列无关。</p>
+<h2 id="五快速排序">五，快速排序</h2>
+<p>分治思想：</p>
+<ul>
+<li>将数组最后一个元素作为基准，把数组分左右两部分，左半部分全部小于基准，右半部分全部大于基准，并把基准插入到两部分之间。</li>
+<li>岁左右有两个数组递归执行上面的步骤。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">private void quickSort(int[] nums, int begin, int end)</span><br><span class="line">   &#123;</span><br><span class="line">       if (begin &lt; end)</span><br><span class="line">       &#123;</span><br><span class="line">           int temp = nums[end];</span><br><span class="line">           int left = begin - 1;</span><br><span class="line"></span><br><span class="line">           for (int cur = begin; cur &lt; end - 1; cur++)</span><br><span class="line">           &#123;</span><br><span class="line">               if (nums[cur] &lt; temp)</span><br><span class="line">               &#123;</span><br><span class="line">                   left++;</span><br><span class="line">                   if (left != cur)</span><br><span class="line">                       swap(ref nums[cur], ref nums[left]);</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           int pivot = left + 1;</span><br><span class="line">           swap(ref nums[pivot], ref nums[end]);</span><br><span class="line"></span><br><span class="line">           quickSort(nums, begin, pivot - 1);</span><br><span class="line">           quickSort(nums, pivot + 1, end);</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>快排的平均时间复杂度为O(NlogN），空间复杂度为O(logN)，但最坏情况下，时间复杂度为O(n²)，空间复杂度为O(n)；且排序是不稳定的，但每次都能确定一个元素所在序列中的最终位置，复杂度与初始序列有关。</p>
+<h2 id="六归并排序">六，归并排序</h2>
+<p>分治法，递归调用，归并排序的核心思想就是：把数组分为两个部分，分别对他们进行归并排序，再把排序号的两个数组合并。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">int[] temp;</span><br><span class="line"> public void MainTest()</span><br><span class="line"> &#123;</span><br><span class="line">     int[] nums = new int[] &#123; 8, 1, 2, 6, 7, 4, 0, 5, 9, 3 &#125;;</span><br><span class="line">     temp = nums;</span><br><span class="line">     MergeSort(nums, 0, nums.Length - 1);</span><br><span class="line"> &#125;</span><br><span class="line"> private void MergeSort(int[] stable, int begin, int end)</span><br><span class="line"> &#123;</span><br><span class="line">     if (begin &lt; end)</span><br><span class="line">     &#123;</span><br><span class="line">         int mid = (begin + end) / 2;</span><br><span class="line">         MergeSort(stable, begin, mid);</span><br><span class="line">         MergeSort(stable, mid + 1, end);</span><br><span class="line">         merge(stable, begin, mid, end);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> private void merge(int[] stable, int begin, int mid, int end)</span><br><span class="line"> &#123;</span><br><span class="line">     int left = begin;</span><br><span class="line">     int right = mid + 1;</span><br><span class="line">     int cur = 0;</span><br><span class="line"></span><br><span class="line">     while (left &lt;= mid &amp;&amp; right &lt;= end)</span><br><span class="line">     &#123;</span><br><span class="line">         if (stable[left] &gt; stable[right])</span><br><span class="line">         &#123;</span><br><span class="line">             temp[cur++] = stable[right++];</span><br><span class="line">         &#125;</span><br><span class="line">         else</span><br><span class="line">         &#123;</span><br><span class="line">             temp[cur++] = stable[left++];</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     while (left &lt;= mid)</span><br><span class="line">     &#123;</span><br><span class="line">         temp[cur++] = stable[left++];</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     while (right &lt;= end)</span><br><span class="line">     &#123;</span><br><span class="line">         temp[cur++] = stable[right++];</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     for (int t = 0; t &lt; cur; t++)</span><br><span class="line">         stable[begin + t] = temp[t];</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>时间复杂度总是为O(NlogN)，空间复杂度也总为为O(N)，算法与初始序列无关，排序是稳定的。</p>
+<p>优化思路：</p>
+<ul>
+<li>在规模较小时，合并排序可采用直接插入；</li>
+<li>在写法上，可以在生成辅助数组时，俩头小，中间大，这时不需要再在后边加俩个while循环进行判断，只需一次比完。</li>
+</ul>
+<h2 id="七堆排序">七，堆排序</h2>
+<p>堆排序借助了堆这个数据结构，是一棵<a href="https://baike.baidu.com/item/%E5%AE%8C%E5%85%A8%E4%BA%8C%E5%8F%89%E6%A0%91" target="_blank" rel="noopener">完全二叉树</a>，每个节点的值都大于或等于其子节点的值，为最大堆；反之为最小堆。</p>
+<p>堆排序分两个阶段：</p>
+<ol>
+<li>堆的构造，让给定数组满足堆的性质。数组“堆化”-&gt;堆有序化</li>
+<li>下沉排序，恢复堆的有序化。</li>
+</ol>
+<p>说白了就是，把一颗有序堆（堆有序而不是数组有序）树根删除，然后依次放到数组的末端，然后重新有序化。重复这个步骤就会得到一个有序数组。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">private void HeapSort(int[] nums)</span><br><span class="line"> &#123;</span><br><span class="line">     /** 构造堆</span><br><span class="line">      *  注意这里len/2会自动向下取整</span><br><span class="line">      *  对于一颗完全二叉树，最后一个父节点的索引就是len/2-1</span><br><span class="line">      *  也就是说这个节点前面全部是父节点，后面的节点全部为叶子节点，</span><br><span class="line">     */</span><br><span class="line">     int len = nums.Length;</span><br><span class="line">     int max = len / 2 - 1;</span><br><span class="line">     for (int i = max; i &gt;= 0; i--)</span><br><span class="line">     &#123;</span><br><span class="line">         sink(nums, i, len);</span><br><span class="line">     &#125;</span><br><span class="line"></span><br><span class="line">     /** 下沉排序</span><br><span class="line">      *  注意这里len/2会自动向下取整</span><br><span class="line">     */</span><br><span class="line">     int N = len - 1;</span><br><span class="line">     for (int j = N; j &gt;= 0; j--)</span><br><span class="line">     &#123;</span><br><span class="line">         swap(ref nums[0], ref nums[j]);</span><br><span class="line">         sink(nums, 0, j);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> // 下沉函数</span><br><span class="line"> private void sink(int[] nums, int idx, int len)</span><br><span class="line"> &#123;</span><br><span class="line">     int max = len / 2 - 1;</span><br><span class="line">     if (idx &lt; 0 || idx &gt; max) return;</span><br><span class="line">     //左子树的索引，完全二叉树的父节点最少有一个子节点，所以左子树必须不为空。</span><br><span class="line">     int left = idx * 2 + 1;</span><br><span class="line">     int right = idx * 2 + 2;</span><br><span class="line">     //找到最大的子节点</span><br><span class="line">     int mi = right &lt; len &amp;&amp; nums[right] &gt; nums[left] ? right : left;</span><br><span class="line">     if (nums[idx] &lt; nums[mi])</span><br><span class="line">     &#123;</span><br><span class="line">         swap(ref nums[mi], ref nums[idx]);</span><br><span class="line">         sink(nums, mi, len);</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>时间复杂度 O(nlogn), 空间复杂度O(1). 从这一点就可以看出，堆排序在时间上类似归并，但是它又是一种原地排序，时间复杂度小于归并的O(n+logn)</p>
+<p>排序时间与输入无关，最好，最差，平均都是O(nlogn). 不稳定</p>
+<p><strong>对于大数据的处理</strong>： 如果对100亿条数据选择top k数据，选择快速排序好还是堆排序好？ 答案是只能用堆排序。 堆排序只需要维护一个k大小的空间，即在内存开辟k大小的空间。而快速排序需要开辟能存储100亿条数据的空间。</p>
+<p>例如，在1000w数据中找出前100个数。我们的解决方法是：</p>
+<ol>
+<li>从1000w数拿出前100个建立一个最小堆。</li>
+<li>把剩下的数依次和堆顶对比，比堆顶大的就用这个数替换堆顶，然后进行依次“堆下沉”操作</li>
+<li>当所有数据都对比完成堆里面剩下的就是前100个数。</li>
+</ol>
+<p>更多内容可以参考：<a href="https://zhuanlan.zhihu.com/p/31440467" target="_blank" rel="noopener">【算法】小白的算法笔记：堆排序 (,• ₃ •,)</a></p>
+<h2 id="八计数排序">八，计数排序</h2>
+<p>把数展开：假设待排序数组中的最大数是m，那么我们创建一个m+1长度的数组N。</p>
+<p>标记位置：标记出现的数。比如，待排序数组中一个数a，N[a]=1;</p>
+<p>输出标记：依次把数组中标记的元素输出，就是一个排序号的数组。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">//计数排序需要已知int数组元素的最大值max</span><br><span class="line">private void CountSort(int[] nums, int max)</span><br><span class="line">&#123;</span><br><span class="line">    int len_nums = nums.Length;</span><br><span class="line">    int len_all = max + 1;</span><br><span class="line">    int[] all = new int[len_all];</span><br><span class="line">    int idx = 0;</span><br><span class="line">    int i = 0;</span><br><span class="line"></span><br><span class="line">    for (; i &lt; len_nums; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        all[nums[i]]++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    i = 0;</span><br><span class="line">    for (; i &lt; len_all; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        int c = all[i];</span><br><span class="line">        while (c &gt; 0)</span><br><span class="line">        &#123;</span><br><span class="line">            nums[idx++] = i;</span><br><span class="line">            c--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>时间复杂度：O(n) + O(x)，n代表数组个数，k代表数组中的最大值。</p>
+<p>所以此算法适合数组中最大值不算太大的情况下，比如对100w学生中，按照成绩进行排序。</p>
+<p>可以把临时数组int[] all，换成一个字典，这样可以不用限制排序数组的最大值。</p>
+<h2 id="九桶排序">九，桶排序</h2>
+<ul>
+<li>假设待排序的一组数统一的分布在一个范围中，并将这一范围划分成几个子范围，也就是桶</li>
+<li>将待排序的一组数，分档规入这些子桶，并将桶中的数据进行排序</li>
+<li>将各个桶中的数据有序的合并起来</li>
+</ul>
+<p>仔细想一想，这是不是一种“分治”策略呢？再仔细想一想，计数排序是不是桶排序的 一种特化呢？</p>
+<p>很显然桶排序的时间复杂度，取决与对各个桶之间数据进行排序的时间复杂度，因为 其它部分的时间复杂度都为O(n);很显然，桶划分的越小，各个桶之间的数据越少，排 序所用的时间也会越少。但相应的空间消耗就会增大。</p>
+<p>可以证明，即使选用插入排序作为桶内排序的方法，桶排序的平均时间复杂度为线性。 具体证明，请参考算法导论。其空间复杂度也为线性。</p>
+<p>参考：</p>
+<p>Bucket Sort <a href="http://Visualizationwww.cs.usfca.edu" target="_blank" rel="noopener">Visualizationwww.cs.usfca.edu</a></p>
+<h2 id="十基数排序">十，基数排序</h2>
+<p>为什么要用基数排序 ？</p>
+<p>计数排序和桶排序都只是在研究一个关键字的排序，现在我们来讨论有多个关键字的排序问题。</p>
+<p>假设我们有一些二元组(a,b)，要对它们进行以a 为首要关键字，b的次要关键字的排序。我们可以先把它们先按照首要关键字排序，分成首要关键字相同的若干堆。然后，在按照次要关键值分别对每一堆进行单独排序。最后再把这些堆串连到一起，使首要关键字较小的一堆排在上面。按这种方式的基数排序称为 <strong>MSD(Most Significant Dight) 排序</strong>。</p>
+<p>第二种方式是从最低有效关键字开始排序，称为 <strong>LSD(Least Significant Dight)排序</strong> 。首先对所有的数据按照次要关键字排序，然后对所有的数据按照首要关键字排序。要注意的是，使用的排序算法必须是稳定的，否则就会取消前一次排序的结果。由于不需要分堆对每堆单独排序，LSD 方法往往比 MSD 简单而开销小。下文介绍的方法全部是基于 LSD 的。</p>
+<p>通常，基数排序要用到计数排序或者桶排序。使用计数排序时，需要的是Order数组。使用桶排序时，可以用链表的方法直接求出排序后的顺序。</p>
+<h2 id="总结">总结</h2>
+<p>比较式排序，前7种。</p>
+<p>分配式排序（distribution sort），桶排序，计数排序，基数排序</p>
+<p>复杂度：</p>
+<p><img src="https://pic3.zhimg.com/v2-1613202596fa001f6bdbfd6eba0251d6_b.jpg" alt="img"></p>
+<p>常用时间复杂度的大小关系：</p>
+<p>O(1)&lt;O(logn)&lt;O(n)&lt;O(nlogn)&lt;O(n2)&lt;O(n3)&lt;O(2n)&lt;O(n!)&lt;O(nn)</p>
+<p>关于稳定性：</p>
+<ul>
+<li>选择排序、快速排序、希尔排序、堆排序不是稳定的排序算法，</li>
+<li>冒泡排序、插入排序、归并排序和基数排序是稳定的排序算法。</li>
+</ul>
+<h2 id="参考">参考</h2>
+<p>人类身份验证 - <a href="http://SegmentFaultsegmentfault.com" target="_blank" rel="noopener">SegmentFaultsegmentfault.com</a></p>
+<p>人类身份验证 - <a href="http://SegmentFaultsegmentfault.com" target="_blank" rel="noopener">SegmentFaultsegmentfault.com</a></p>
+<p><a href="http://xn--wuchong-cx3kw7wln1avmh0lfs3mpu6airvx22aeplic.me" target="_blank" rel="noopener">经典排序算法总结与实现wuchong.me</a><img src="https://pic2.zhimg.com/v2-464b5e7fa6a5adc2218201cfec759919_180x120.jpg" alt="图标"></p>
+<p>排序算法整理(6)堆排序的应用，top K <a href="http://xn--blog-4e0n21k.csdn.net" target="_blank" rel="noopener">问题blog.csdn.net</a></p>
+<p>桶排序_百度百科baike.baidu.com</p>
+<p><a href="http://www.roading.org/algorithm/introductiontoalgorithm/%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%884%EF%BC%89-%E6%A1%B6%E6%8E%92%E5%BA%8F%EF%BC%88bucket-sort%EF%BC%89.htmlwww.roading.org" target="_blank" rel="noopener">http://www.roading.org/algorithm/introductiontoalgorithm/第八章（4）-桶排序（bucket-sort）.htmlwww.roading.org</a><img src="https://pic1.zhimg.com/v2-8ddf422b42bf741115de5257c9cfae94_180x120.jpg" alt="图标"></p>
+<p><a href="http://www.roading.org/algorithm/introductiontoalgorithm/%E7%AC%AC%E5%85%AB%E7%AB%A0%EF%BC%884%EF%BC%89-%E6%A1%B6%E6%8E%92%E5%BA%8F%EF%BC%88bucket-sort%EF%BC%89.html" target="_blank" rel="noopener">桶排序（Bucket sort）</a></p>
+<p>桶排序（Bucket sort）<a href="http://www.roading.org" target="_blank" rel="noopener">www.roading.org</a><img src="https://pic1.zhimg.com/v2-8ddf422b42bf741115de5257c9cfae94_180x120.jpg" alt="图标"></p>
+<p>Bucket Sort <a href="http://Visualizationwww.cs.usfca.edu" target="_blank" rel="noopener">Visualizationwww.cs.usfca.edu</a></p>
+<p><a href="http://xn--openhome-qs8ns04ch5mvqfhz1a.cc" target="_blank" rel="noopener">基數排序法openhome.cc</a><img src="https://pic4.zhimg.com/v2-8826537a8f65cd049258d31c7be5c493_ipico.jpg" alt="图标"></p>
+
+
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/article/我的第一篇文章/" data-toggle="tooltip" data-placement="top"
+                            title="博客开篇">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/article/hexo-theme-huweihuang/" data-toggle="tooltip" data-placement="top"
+                            title="[Hexo] Theme HuWeihuang">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                <div class="social-share" data-wechat-qrcode-helper="" align="center"></div>
+                <!--  css & js -->
+                <link rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                <script
+                    src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>
+
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+                            <!--PC版-->
+                <div id="SOHUCS"></div>
+                <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js"></script>
+                <script type="text/javascript">
+                    window.changyan.api.config({
+                        appid: 'cyu9nvd1H',
+                        conf: 'prod_d3b08d9d4b47e765df1a513bcd38865c'
+                    });
+                </script>
+            </div>
+
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#一冒泡排序"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">&#x4E00;&#xFF0C;&#x5192;&#x6CE1;&#x6392;&#x5E8F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#二插入排序"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">&#x4E8C;&#xFF0C;&#x63D2;&#x5165;&#x6392;&#x5E8F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#三希尔排序"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">&#x4E09;&#xFF0C;&#x5E0C;&#x5C14;&#x6392;&#x5E8F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#四选择排序"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">&#x56DB;&#xFF0C;&#x9009;&#x62E9;&#x6392;&#x5E8F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#五快速排序"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">&#x4E94;&#xFF0C;&#x5FEB;&#x901F;&#x6392;&#x5E8F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#六归并排序"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">&#x516D;&#xFF0C;&#x5F52;&#x5E76;&#x6392;&#x5E8F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#七堆排序"><span class="toc-nav-number">7.</span> <span class="toc-nav-text">&#x4E03;&#xFF0C;&#x5806;&#x6392;&#x5E8F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#八计数排序"><span class="toc-nav-number">8.</span> <span class="toc-nav-text">&#x516B;&#xFF0C;&#x8BA1;&#x6570;&#x6392;&#x5E8F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#九桶排序"><span class="toc-nav-number">9.</span> <span class="toc-nav-text">&#x4E5D;&#xFF0C;&#x6876;&#x6392;&#x5E8F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#十基数排序"><span class="toc-nav-number">10.</span> <span class="toc-nav-text">&#x5341;&#xFF0C;&#x57FA;&#x6570;&#x6392;&#x5E8F;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#总结"><span class="toc-nav-number">11.</span> <span class="toc-nav-text">&#x603B;&#x7ED3;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#参考"><span class="toc-nav-number">12.</span> <span class="toc-nav-text">&#x53C2;&#x8003;</span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#算法"
+                            title="算法">算法</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                    <li><a href="https://www.cnblogs.com/fly-100/" target="_blank">博客园 追峰人</a></li>
+                    
+                    <li><a href="https://www.zhihu.com/people/daboss007" target="_blank">知乎 李志雄</a></li>
+                    
+                    <li><a href="https://github.com/zxlii" target="_blank">Github zxlii</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js", function () {
+        anchors.options = {
+            visible: 'hover',
+            placement: 'left',
+            icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link {
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top: -0.1em;
+        }
+    }
+</style>
+
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+                    
+
+                    
+
+                    
+
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zxlii">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 追风人 2019
+                    <!-- <br>
+                    Theme by <a href="http://beantech.org">BeanTech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://www.huweihuang.com">胡伟煌</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe> -->
+                </p>
+                <!-- GoStats Simple HTML Based Code -->
+                <p class="copyright text-muted">
+                    访问数：
+                    <a target="_blank" title="web site traffic statistics" href="http://www.gostats.org"><img
+                            alt="web site traffic statistics" src="//www.gostats.org/0.png?a=701070455&ct=4&ci=41"
+                            style="border-width:0" />
+                    </a>
+                </p>
+                <!-- End GoStats Simple HTML Based Code -->
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if ($('#tag_cloud').length !== 0) {
+        async("http://www.lizhixiong.net/js/jquery.tagcloud.js", function () {
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: { start: '#bbbbee', end: '#0085a1' },
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?" + _baId;
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://www.lizhixiong.net/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
