@@ -7,6 +7,14 @@
     </url>
 
     <url>
+        <loc>http://www.lizhixiong.net/article/golang%E6%93%8D%E4%BD%9Cmysql/</loc>
+        <lastmod>2019-04-01T08:07:53.804Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://www.lizhixiong.net/article/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95%E6%80%BB%E7%BB%93/</loc>
         <lastmod>2019-04-01T07:49:20.821Z</lastmod>
         <changefreq>weekly</changefreq>

@@ -14,11 +14,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          我的第一篇文章 - 追风人 | Blog
+          golang操作mysql - 追风人 | Blog
         
     </title>
 
-    <link rel="canonical" href="http://www.lizhixiong.net/article/我的第一篇文章/">
+    <link rel="canonical" href="http://www.lizhixiong.net/article/golang操作mysql/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -71,7 +71,7 @@
 <style type="text/css">
     header.intro-header{
         
-            background-image: url('/img/article_header/article_bg.jpg')
+            background-image: url('/img/header_img/city.jpg')
             /*post*/
         
     }
@@ -88,14 +88,12 @@
                     <div class="post-heading">
                         <div class="tags">
                             
-                              <a class="tag" href="/tags/#杂谈" title="杂谈">杂谈</a>
-                            
                         </div>
-                        <h1>我的第一篇文章</h1>
-                        <h2 class="subheading">杂谈</h2>
+                        <h1>golang操作mysql</h1>
+                        <h2 class="subheading">golang操作mysql</h2>
                         <span class="meta">
                             Posted by 追风人 on
-                            2019-03-27
+                            2019-04-01
                         </span>
                     </div>
                 
@@ -212,27 +210,32 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <p>2019年的互联网可以用一句古诗来形容：“山雨欲来风满楼”。昨天的一条新闻更是印证了这一点，阿里文娱3月28日前后又迎来一波裁员潮，很多员工开始外出找工作，据说此次裁员规模在1/4左右！</p>
-<p>作为我一个8年的程序来说，其实也不算什么新闻，但是能引起一点点对职业对人生的思考。<br>
-在过去N年中国互联网的发展是浮躁的，行业正在处于一个趋于理性的阶段。一方面，大公司为了应对“危机”需要优化内部资源配置。另一方面，大量的同质化产品需要重新洗牌，因为用户的普遍要求已经被抬高，简单说就是用户对产品的要求变高了。预测在未来的10年，互联网很多被玩过的领域会被再玩一遍。以前玩是从无到有。现在玩是从“多、乱”到“少，好”。</p>
-<p>一个程序如何在当今的情况下提升自己的价值？</p>
-<h1 id=""></h1>
-
+                <p>最近在书里服务器相关的知识，今天主要看一下在go中是如何操作mysql的。</p>
+<h2 id="准备mysql">准备mysql</h2>
+<p>首先，如果电脑没装mysql就去装一个，这里给出下载地址：<a href="https://dev.mysql.com/downloads/mysql/" target="_blank" rel="noopener">https://dev.mysql.com/downloads/mysql/</a><br>
+然后，mysql安装完成后，用root账号登陆mysql;<br>
+新建一个用于测试的库,并使用这个库：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> CREATE DATABASE go_test</span><br><span class="line"><span class="meta">mysql&gt;</span> use go_test</span><br></pre></td></tr></table></figure>
+<p>新建一个用于测试的mysql账号,并分配测试库的使用权限：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> CREATE USER test1@localhost IDENTIFIED BY '12345678';</span><br><span class="line"><span class="meta">mysql&gt;</span> GRANT ALL ON go_test.* to test1@localhost;</span><br></pre></td></tr></table></figure>
+<h2 id="链接mysql">链接mysql</h2>
+<p>golang使用的驱动的形式，就是说，golang本身已经把数据库操作抽象出来‘database/sql’,golang只提供借口不考虑实现细节，任何人都可以根据golang提供的借口实现自己的‘驱动’。<br>
+这里我们使用了‘<a href="http://github.com/go-sql-driver/mysql%E2%80%99%E8%BF%99%E4%B8%AA%E9%A9%B1%E5%8A%A8%E3%80%82" target="_blank" rel="noopener">github.com/go-sql-driver/mysql’这个驱动。</a></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"database/sql"</span></span><br><span class="line">	_ <span class="string">"github.com/go-sql-driver/mysql"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	fmt.Println(<span class="string">"start..."</span>)</span><br><span class="line">  <span class="comment">//连接数据库，这是个‘懒’操作，它本身并没有进行连接，知识记录了一些信息</span></span><br><span class="line">  <span class="comment">//第一次使用才真正进行连接</span></span><br><span class="line">	db,err:=sql.Open(<span class="string">"mysql"</span>,<span class="string">"test1:12345678@/go_test"</span>)</span><br><span class="line">	<span class="keyword">if</span> err!=<span class="literal">nil</span> &#123;</span><br><span class="line">		fmt.Println(<span class="string">"link err!"</span>)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">  <span class="comment">//测试连接</span></span><br><span class="line">	err = db.Ping()</span><br><span class="line">	<span class="keyword">if</span> err!=<span class="literal">nil</span>&#123;</span><br><span class="line">		fmt.Println(<span class="string">"ping err!"</span>)</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(<span class="string">"connect success!"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="增删改查">增删改查</h2>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">link</span><span class="params">(db *sql.DB)</span></span>&#123;</span><br><span class="line">	showtable(db)</span><br><span class="line">	<span class="comment">//插入</span></span><br><span class="line">	db.Exec(<span class="string">"insert into tb1 set uid=8,username='xiaoqiang'"</span>)</span><br><span class="line">	showtable(db)</span><br><span class="line">	<span class="comment">//删除</span></span><br><span class="line">	db.Exec(<span class="string">"delete from tb1 where uid=1"</span>)</span><br><span class="line">	showtable(db)</span><br><span class="line">	<span class="comment">//更新</span></span><br><span class="line">	db.Exec(<span class="string">"update tb1 set username='xiaoqiang111' where uid=8"</span>)</span><br><span class="line">	showtable(db)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//查询</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">showtable</span><span class="params">(db *sql.DB)</span></span>&#123;</span><br><span class="line">	rows, _ := db.Query(<span class="string">"SELECT * FROM tb1"</span>)</span><br><span class="line">	<span class="keyword">for</span> rows.Next() &#123;</span><br><span class="line">		<span class="keyword">var</span> uid <span class="keyword">int</span></span><br><span class="line">		<span class="keyword">var</span> username <span class="keyword">string</span></span><br><span class="line">		rows.Scan(&amp;uid, &amp;username)</span><br><span class="line">		fmt.Println(strings.Join([]<span class="keyword">string</span>&#123;strconv.Itoa(uid), username&#125;, <span class="string">","</span>))</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>sql.Open()函数用来打开一个注册过的数据库驱动，go-sql-driver中注册了mysql这个数据库驱动，第二个参数是DSN(Data Source Name)，它是go-sql-driver定义的一些数据库链接和配置信息。它支持如下格式：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">user@unix(/path/to/socket)/dbname?charset=utf8</span><br><span class="line">user:password@tcp(localhost:5555)/dbname?charset=utf8</span><br><span class="line">user:password@/dbname</span><br><span class="line">user:password@tcp([de:ad:be:ef::ca:fe]:80)/dbname</span><br></pre></td></tr></table></figure>
 
 
                 <hr>
                 <!-- Pager -->
                 <ul class="pager">
                     
-                    <li class="previous">
-                        <a href="/article/golang操作mysql/" data-toggle="tooltip" data-placement="top"
-                            title="golang操作mysql">&larr; Previous Post</a>
-                    </li>
-                    
                     
                     <li class="next">
-                        <a href="/article/排序算法总结/" data-toggle="tooltip" data-placement="top"
-                            title="排序算法总结">Next Post &rarr;</a>
+                        <a href="/article/我的第一篇文章/" data-toggle="tooltip" data-placement="top"
+                            title="我的第一篇文章">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -299,7 +302,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"></span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#准备mysql"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">&#x51C6;&#x5907;mysql</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#链接mysql"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">&#x94FE;&#x63A5;mysql</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#增删改查"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">&#x589E;&#x5220;&#x6539;&#x67E5;</span></a></li></ol>
         
         </div>
       </aside>
@@ -318,9 +321,6 @@
                     <!-- no hr -->
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
-                        
-                        <a class="tag" href="/tags/#杂谈"
-                            title="杂谈">杂谈</a>
                         
                     </div>
                 </section>
