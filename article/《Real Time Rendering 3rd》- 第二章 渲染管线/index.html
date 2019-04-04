@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          《Real Time Rendering 3rd》- 第二章 渲染管线 - 追风人 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://www.lizhixiong.net/article/《Real Time Rendering 3rd》- 第二章 渲染管线/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#图形学" title="图形学">图形学</a>
+                            
+                              <a class="tag" href="/tags/#渲染管线" title="渲染管线">渲染管线</a>
+                            
+                        </div>
+                        <h1>《Real Time Rendering 3rd》- 第二章 渲染管线</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 追风人 on
+                            2018-04-08
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">追风人</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>渲染管线的主要功能是在给定一个虚拟相机、三维物体、光源、阴影方程、纹理等的情况下， 生成或渲染一个二维图像。因此，渲染管线是实时渲染的基础工具。</p>
+<p>图2.1描述了使用流水线的过程。图像中物体的位置和形状取决于它们的几何形状，环境特征以及相机在该环境中的位置。物体的外观受材质属性，光源，纹理和着色模型的影响。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-7360b14b9289dd8dfd75f42c47947fab_hd.jpg" alt="img"></p>
+<p>图2.1</p>
+<p>在左侧的图像中，虚拟相机位于金字塔的尖端（四条线相交）。 只有视图体内的图元呈现红色。 对于以透视方式呈现的图像（如这里的情况），视图体积是平截头体，即具有矩形底座的截头金字塔。 正确的图像显示了相机“看到的”。请注意，左侧图像中的红色圆环形状不在右侧，因为它位于视锥外。 而且，左图像中扭曲的蓝色棱镜被夹在截锥体的顶部平面上。</p>
+<h2 id="21-体系结构"><strong>2.1 体系结构</strong></h2>
+<p>管线的主要作用是提升性能。理论上，一个非管线系统被分为n条并行的管线，会使速度提高n倍。而且，只有最慢的那条子管线完成时整个管线才算完成，也就是说最慢的那条管线决定了整个管线的速度。</p>
+<p>计算机图形环境中把管线粗略的分为三个概念阶段 - 应用程序阶段，几何阶段，光栅化阶段。图2.2所示。</p>
+<p><img src="https://pic3.zhimg.com/v2-93157924297a0f47f8f04aac039322de_b.jpg" alt="img"></p>
+<p>图2.2 其中的每个管线阶段自己也可能是一个管线，如图中几何阶段下方所示，或者阶段是（部分）并行化的，如图中光栅化阶段下方所示。应用程序阶段是一个单独的过程，但是这个阶段也可以是流水线或并行化的。</p>
+<p>上图中的三个属于概念阶段，一般每个阶段自身也是一条管线，也就是说它是由几个子阶段组成的。我们区分概念阶段（应用程序，几何，光栅化），功能阶段和管线阶段。</p>
+<p>功能阶段具有执行的特定任务，但不指定任务在管道中执行的方式。</p>
+<p>流水线阶段与所有其他流水线阶段同时执行。 流水线阶段也可以并行化以满足高性能需求。 例如，几何阶段可以分为五个功能阶段，但它是图形系统的实现，它决定了它划分为流水线阶段。</p>
+<p>多个功能阶段可以组合成一个流水线阶段，耗时的功能阶段可以分成几个流水线阶段，或者将其并行化。</p>
+<p>最慢的管线阶段决定了渲染速度，也就是图像刷新速率。这种速度可以用frames per second（fps）来表示，代表每秒渲染图像的次数。也可以用赫兹（Hz）来表示，Hz就是“1/秒”的符号，5Hz代表5次每秒。和fps一个意思。</p>
+<h2 id="22-应用程序阶段-application-stage"><strong>2.2 应用程序阶段 Application Stage</strong></h2>
+<p>开发者可以完全控制应用程序阶段发生的事情，因为它是在CPU上运行的。所以，开发者能决定全部的实现内容也可以为了提高性能做后续的修改。这里的修改也能影响随后阶段的性能。例如，应用程序阶段的算法或者设置可以减少渲染的三角形数量。</p>
+<p>应用程序阶段的末尾，被渲染的几何体会被喂到几何阶段。这些就是渲染图元，即，点，线和三角形，最终可能会在屏幕上结束（或者任何其他的输出设备）。这是应用程序阶段最重要的任务。</p>
+<p>本阶段基于软件的实现的结果就是，他不会像几何光栅化阶段那样分为多个子阶段。但是，为了提高性能，此阶段经常会并行在多个处理器内核上。在CPU设计中，这被称为superscalar架构，因为它能在同一阶段同时运行多个进程。</p>
+<p>在这个阶段通常会实施的一个过程叫碰撞检测。两个物体间的碰撞被检测后，可能会生成一个response然后发送回碰撞物体，以及力量反馈设备。应用程序阶段也会处理其他来源的输入，例如键盘，鼠标，头戴式头盔等等。基于这些输入，将会发生不同种类的行为。其他过程还包括文理动画，通过变换的动画，和任何不会再其他阶段执行的计算。加速算法，例如分层视锥截取也在这里实现。有些情况，多个连续的功能阶段形成一个单一的流水线阶段（与其他流水线阶段并行运行）。 其他情况下，功能阶段可以细分为几个较小的流水线阶段。</p>
+<h2 id="23-几何阶段-geometry-stage"><strong>2.3 几何阶段 Geometry Stage</strong></h2>
+<p>几何阶段负责大部分逐多边形和逐定点的操作。此阶段进一步分为几个功能阶段：模型和视图变换，定点着色，投影，剪裁，和屏幕映射（图2.3）。再次注意，根据实现情况，这些功能阶段可以与管线阶段相同或者不同。</p>
+<p><img src="https://pic3.zhimg.com/v2-1dcfc9dc01247eb649c246f9aef9672e_b.jpg" alt="img"></p>
+<p>图2.3 几何阶段细分为功能阶段的管线</p>
+<p>例如，一个极端情况，整个渲染管线的所有阶段有可能运行在一个处理器上，然后就可以说整条渲染管线由一个管线阶段组成。当然，这是在分开的加速器芯片和电路板出现之前所有图形化的生产方式。另一个极端就是，每个功能阶段都被分配到几个小型管线阶段中，每个这样的管线阶段都可以在一个指定的处理器核心元素上执行。</p>
+<p>2.3.1 模型和视图变换 Model and View Transform</p>
+<p>在进入屏幕的过程中，一个模型会被转换成几个不同的空间或者坐标系统。最开始，一个模型会在他自身的模型空间，这就意味着他根本就没有被变换。每个模型都可以与模型变换相关联，以便它可以定位和摆正。可以将多个模型变换和同一个模型相关联。这允许几个相同模型的副本在同一个场景中具有不同的位置，朝向，大小，而不需要复制基础的几何信息。</p>
+<p>模型变换变换的是模型的定点和法线。物体的坐标叫做模型坐标，当模型变换被实施到这些坐标之后，模型就会坐落于世界坐标或者世界空间中。世界空间是独一无二的，当所有模型经过各自的模型变换后，所有模型都存在于同一个空间中。</p>
+<p>前面说过，只有只有相机（观察者）能看到的模型才会被渲染。相机具有一个直接空间的坐标和一个朝向，用来定位和瞄准相机。为了便于投影和剪裁，相机和所有模型都要进行视图变换。视图变换的目的是吧相机放到原点并且让它看向z轴的负方向，同时，y轴向上，x轴向右。视图变换后的真实的位置和方向取决于底层API。</p>
+<p><img src="https://pic2.zhimg.com/v2-aed8c95e547dc65de6023b1b07ccde31_b.jpg" alt="img"></p>
+<p>图2.4</p>
+<p>左侧的插图中，相机的位置和朝向是用户想要的。视图把相机重新定位到原点，然后看向轴的负方向，如右侧插图所示。这样做是为了让剪裁和投影操作跟简单快速。高亮的灰色区域是视体。这里假设为透视观察，因为视体是一个平截头体。相似的技术适用于任何类型的投影。</p>
+<p>这样描绘的空间被称为相机空间，或者更常用的眼空间。图2.4显示了视图变换影响相机和模型的一个例子。模型变换和视图变换均作为4x4矩阵实现，这是第4章的主题。</p>
+<p>2.3.2 顶点着色 Vertex Shading</p>
+<p>为了产生逼真的场景，仅渲染对象的形状和位置是不够的，他们的外观也需要被建模。包括物体的材质以及各种光源照射在物体上的效果。材质和灯光可以通过多种方式进行建模，从简单的颜色到复杂的物理描述。</p>
+<p>这些决定光照射到材质上的效果的操作称为着色。它设计到在物体的各个点上计算着色方程。一般来说，这些计算的一部分会在几何阶段的模型定点上被执行，另一些可能会在逐像素的光栅化中被执行。每个顶点能存储各种各样的材质数，比如点的坐标，法线，颜色，或者任何其他用来计算着色方程的数字信息。然后，顶点着色的结果（可以是颜色，矢量，纹理坐标或任何其他类型的着色数据）会被输送到光栅化阶段会被用来做差值运算。</p>
+<p>着色计算经常被认为发生在世界空间。实际上，将相关实体（如相机和光源）转换到其他空间（如模型或眼睛空间）并在那里执行计算有时很方便。这是可行的，因为如果着色计算中的所有实体都转换到相同的空间，那么，光源，相机和模型之间的相对关系将会被保留。</p>
+<p>2.3.3 投影 Projection</p>
+<p>在Vertex Shading 之后，渲染系统进行投影，投影会将转换视体到一个单位正方体中，正方体的两极点为(-1,-1,-1)和(1,1,1)。这个单位立方体被叫做规范视域体canonical view volume (CVV)。有两种经常用到的投影方法，叫做正交投影和透视投影。见图2.5.</p>
+<p><img src="https://pic2.zhimg.com/v2-b218489013d995a691a07f6932167929_b.jpg" alt="img"></p>
+<p>图2.5 左边是正交投影或者平行投影，右边是透视投影。</p>
+<p>在几何学上，称为平截头体的视域体是一个带有长方形底座的截顶金字塔。 平截头体也被转换为单位立方体。 正交和透视变换都可以用4×4矩阵构建（见第4章），并且在任一变换之后，模型被认为处于归一化设备坐标。</p>
+<p>虽然这些矩阵将一个体转换为另一个体，但它们被称为投影，因为在显示之后，z坐标不会存储在所生成的图像中.这样，模型就会从三维投影到二维。</p>
+<p>2.3.4 剪裁 Clipping</p>
+<p>只有全部或部分在视域体内的图元才需要传递到光栅化阶段，然后将其绘制在屏幕上。完全位于视域体内的图元将会按原样传递到下一个阶段。完全位于视域体外的图元不会进一步传递，因为他不会被渲染。需要剪裁的就是只有部分在视域体内的图元。例如，有一条线一个定点在视域体内一个定点在视域体外，他就应该沿着视域体进行剪裁，视域体外的顶点会被新的顶点代替，新的顶点就是线和视域体边缘的交界点</p>
+<p>使用投影矩阵也就意味着，变换的图元会沿着单位正方体的边缘剪裁。剪裁之前进行视图变换和投影的好处就是它让剪裁问题统一处理。图元总是沿着单位正方体来剪裁。图2.6描绘了剪裁的过程。</p>
+<p>除了视域体的6个剪裁面，用户可以额外的定义剪裁面来明显的切断物体。显示这种可视化的图像称为sectioning，如646页图14.1所示。</p>
+<p>与先前几何图形阶段（通常由可编程处理单元执行）不同，裁剪阶段（以及后续的屏幕映射阶段）通常由固定操作硬件处理。</p>
+<p><img src="https://pic3.zhimg.com/v2-56b07de5aa3fddcff2f79e7f17608f0a_b.jpg" alt="img"></p>
+<p>图2.6</p>
+<p>2.3.5 屏幕映射 Screen Mapping</p>
+<p>只有视域体内的图元（剪裁后）才会被传送到屏幕映射阶段，并且在这整个阶段中坐标仍然是3D的。每个图元的x,y坐标被转换为屏幕坐标的格式。带有z值的屏幕坐标也被叫做窗口坐标（window coordinates）。假设场景应该被渲染到一个窗口，窗口的最小的角（x1,y1)最大的角（x2，y2），x1&lt;x2,y1&lt;y2.然后屏幕映射就会跟随一个屏幕缩放操作。在这个映射过程中z坐标不会受影响。新的x，y坐标叫做屏幕坐标。这些与z坐标（-1≤z≤1）一起被传递到光栅化阶段。 屏幕映射过程如图2.7所示。</p>
+<p>混淆的来源是整数和浮点值如何与像素（和纹理）坐标相关。</p>
+<p><img src="https://pic3.zhimg.com/v2-f6e6260b2222c8e5bbc6bc0fb0900176_b.jpg" alt="img"></p>
+<p>图2.7。 投影变换后，原始图像位于单位立方体中，并且屏幕映射程序负责在屏幕上查找坐标。</p>
+<p>DirectX 9及之前的版本使用一个坐标系，其中0.0是像素的中心，这意味着像素范围[0,9]涵盖[-0.5,9.5]的范围。Heckbert [520]提出了一个更逻辑一致的方案。给定像素的水平阵列并使用笛卡尔坐标，最左边的像素的左边缘在浮点坐标中为0.0。 OpenGL一直使用这种方案，并且DirectX 10及其后续版本使用它。 这个像素的中心在0.5。 因此，一系列像素[0，9]覆盖[0.0，10.0）的范围。这个转换很简单：</p>
+<p><img src="https://pic3.zhimg.com/v2-087c368f75464f8b41417dcd62dd062e_b.jpg" alt="img"></p>
+<p>其中d是像素的离散（整数）索引，c是像素内的连续（浮点）值。</p>
+<p>尽管所有API的像素位置值都是从左到右增加的，但在某些情况下，OpenGL和DirectX之间的顶部和底部边缘的零点位置不一致。OpenGL赞成整个Cartessian系统，将左下角作为原点，而DirectX有时将左上角定义原点，具体取决于上下文。 各自都有各自的逻辑，但是不存在正确的答案。 例如，（0,0）位于OpenGL中图像的左下角，DirectX则位于左上角。 DirectX的原因是屏幕上的许多现象都是从上到下：Microsoft Windows使用这个坐标系，我们按照这个方向读取，许多图像文件格式以这种方式存储它们的缓冲区。 关键在于差异存在并且在从一个API移到另一个时考虑到这一点非常重要。</p>
+<h2 id="24-光栅化阶段-rasterizer-stage"><strong>2.4 光栅化阶段 Rasterizer Stage</strong></h2>
+<p>给定变换和投影的顶点及其关联的shading数据（全部来自几何阶段），光栅化阶段的目标是计算和设置对象覆盖的像素的颜色。这个过程被称为光栅化或扫描转换，因此这是从屏幕空间中的二维顶点转换而来 - 每个顶点都有一个z值（深度值）以及与每个顶点相关的各种shading信息 - 转换为屏幕上的像素。</p>
+<p><img src="https://pic4.zhimg.com/v2-4ada57ee84ae7df5a32c543e81038bf7_b.jpg" alt="img"></p>
+<p>图2.8 光栅化阶段分为多个功能阶段组成的一条管线。</p>
+<p>和几何阶段相似，此阶段被分为几个功能阶段：三角形设置，三角形遍历，像素着色，和融合（图2.8）</p>
+<p>2.4.1 三角形设置</p>
+<p>在这个阶段，计算三角形表面的微分和其他数据。 该数据用于扫描转换，以及用于内插值由几何阶段产生的各种着色数据。 该过程由专用于该任务的固定任务硬件执行。</p>
+<p>2.4.2 三角形遍历</p>
+<p>这里是检查被三角形覆盖其中心（或样本）的每个像素，并且为与三角形重叠的像素部分生成片段。 查找哪些样本或像素位于三角形内通常称为三角形遍历或扫描转换。 每个三角形片段的属性都是使用在三个三角形顶点数据之间插值的方式生成的（请参见第5章）。 这些属性包括片段的深度，以及来自几何阶段的任何shading数据。 Akeley和Jermoluk [7]和Rogers [1077]提供了关于三角遍历的更多信息。</p>
+<p>2.4.3 像素着色</p>
+<p>任何逐像素的着色计算都在这里执行，使用插值的shading数据作为输入。 最终的结果是将一种或多种颜色传递到下一个阶段。 与通常由专用硬连线硅片执行的三角形设置和遍历阶段不同，像素着色阶段由可编程GPU核心执行。 这里可以使用大量的技术，其中最重要的是纹理技术。 在第6章中将更详细地讨论纹理。简单地说，纹理对象意味着将图像“粘合”到该对象上。 这个过程如图2.9所示。 图像可以是一维，二维或三维，其中二维图像是最常见的。</p>
+<p><img src="https://pic3.zhimg.com/v2-802d18c627897483d978cd691ce2e58a_b.jpg" alt="img"></p>
+<p>图2.9 左边显示了一条不带纹理贴图的龙的模型。图像纹理中的碎片“粘”在龙上，结果显示在左下角。</p>
+<p>2.4.4 融合</p>
+<p>每个像素的信息存储在color buffer中，color buffer是一个二维数组（每个颜色由红，绿，蓝组成）。融合阶段的任务是融合shading阶段产生存储在buffer中的片段颜色。和shading阶段不同的是，GPU字单元在此阶段的执行一般不是全部可编程的。但是，它是高度可配置的，开启各种效果。</p>
+<p>此阶段同时也有解决可见问题的责任。这就意味着，一旦整个场景已经被渲染，color buffer应该包含场景中图元的颜色，图元是从相机的视点可见的。对于大多数硬件，这是通过Z-buffer（也叫做depth buffer）算法完成的。Z-buffer的大小和形状与color buffer的大小和形状相同，并且对于每个像素，其存储从相机到当前最近的图元的z值。这就意味着，当一个图元被渲染到像素，图元在这个像素上的z值将和Z-buffer在这个像素中的值进行计算和比较。如果新z值比Z-buffer中的z值小，将要绘制的新图元就比之前的图元离相机更近。因此，该像素的z值和颜色将使用新的图元的z值和颜色进行更新。如果计算后的z值比Z-buffer中的值大，color buffer和Z-buffer保持不变。Z-buffer算法非常简单，复杂度为O(n)（n是图元的数量），适用于任何可为每个像素计算z值的绘图图元。还要注意，该算法允许大多数基元以任何顺序呈现，这是其受欢迎的另一个原因。 但是，部分透明的基元不能以任何顺序呈现。 它们必须在所有不透明基元之后以及按照从后向前的顺序进行渲染（第5.7节）。 这是Z缓冲区的主要弱点之一。</p>
+<p>我们已经提到，color buffer用于存储颜色，Z-buffer用于存储每个像素的z值。然而，还有其他的channels和buffers可以用来过滤和捕获片段信息。alpha channel和color buffer相关联，并为每个像素存储相关的不透明值（5.7节）。在进行depth test之前，可以在输入的片段上执行可选的alpha test。片段的alpha值通过某个指定的测试与参考值进行比较。如果片段未能通过测试，则将其从进一步处理中移除。此测试通常用于确保完全透明的片段不会影响Z-buffer（请参阅第6.6节）</p>
+<p>模板缓冲区（stencil buffer）是一个屏幕外缓冲区，用于记录呈现的图元的位置。 它通常包含每个像素8位。 可以使用各种函数将基元渲染到模板缓冲区中，然后可以使用缓冲区的内容来控制渲染到颜色缓冲区和Z缓冲区中。 作为一个例子，假设一个实心圆圈已经被绘制到模板缓冲区中。 这可以与操作符结合使用，该操作符允许将后续基元渲染到仅存在圆的地方的颜色缓冲区中。 模板缓冲区是生成特殊效果的强大工具。 管道末端的所有这些功能都称为光栅操作（ROP raster operations）或混合操作。</p>
+<p>帧缓冲区(frame buffer)通常由系统上的所有缓冲区组成，但它有时仅用于表示color buffe和Z-buffer作为一个集合。 1990年，Haeberli和Akeley [474]对帧缓冲区提出了另一种补充，称为累积缓冲区accumulation buffer。 在这个缓冲区中，图像可以使用一组运算符进行累加。 例如，可以累积和平均显示运动中的物体的一组图像，以便生成运动模糊。 其他可以生成的效果包括景深，抗锯齿，柔和阴影等。</p>
+<p>当图元达到并通过光栅化阶段时，从相机的角度看到的那些将显示在屏幕上。 该屏幕显示颜色缓冲区的内容。 为避免让人类观察者看到图元被光栅化并发送到屏幕，使用双缓冲。 这意味着场景的渲染将在屏幕后面的后台缓冲区中进行。 一旦将场景渲染到后台缓冲区中，后台缓冲区的内容将与之前显示在屏幕上的前台缓冲区的内容交换。 交换发生在垂直回扫过程中，这是安全的。</p>
+<p>有关不同缓冲区和缓冲方法的更多信息，请参见5.6.2和18.1节。</p>
+<h2 id="25-管线总览"><strong>2.5 管线总览</strong></h2>
+<p>点，线和三角形是构建模型或对象的渲染基元。 想象一下，应用程序是一个交互式计算机辅助设计（CAD）应用程序，并且用户正在检查手机的设计。 在这里，我们将沿着这个模型贯穿整个图形渲染管线，由三个主要阶段组成：应用程序，几何和光栅化。 场景在透视下呈现在屏幕上的一个窗口中。 在这个简单的例子中，手机模型包括线（显示部分的边）和三角形（显示表面）。 某些三角形由二维图像纹理化，以表示键盘和屏幕。 对于这个例子，除了应用光栅化阶段出现的纹理之外，在几何阶段完全计算着色。</p>
+<p>2.5.1 应用程序阶段</p>
+<p>CAD应用程序允许用户选择和移动模型的一部分。 例如，用户可能会选择手机的顶部，然后移动鼠标以打开手机。 应用程序阶段必须将鼠标移动到相应的旋转矩阵，然后看到该矩阵在渲染时正确应用于盖子。 另一个示例：播放动画，将相机沿预定义路径移动，以便从不同视图显示手机。 摄像机参数，例如位置和视图方向，必须由应用程序根据时间更新。 对于要呈现的每个帧，应用程序阶段将摄像机位置，光照和模型的基元提供给流水线中的下一个主要阶段 - 几何阶段。</p>
+<p>2.5.2 几何阶段</p>
+<p>在应用阶段计算视图变换，并为每个对象指定其位置和方向的模型矩阵。对于传递给几何阶段的每个对象，这两个矩阵通常会一起乘以一个矩阵。在几何阶段中，对象的顶点和法线用这个级联矩阵进行变换，将对象放入眼睛空间。然后使用材质和光源属性计算顶点阴影。然后执行投影，将对象转换为代表眼睛看到的单位立方体空间。放弃多维数据集外的所有基元。所有与这个单位立方体相交的基元被剪切在立方体上，以便获得完全位于单位立方体内的一组基元。顶点然后被映射到屏幕上的窗口中。在完成所有这些每多边形操作之后，结果数据将被传递到光栅化器 - 流水线中的最后一个主要阶段。</p>
+<p>2.5.3 光栅化阶段</p>
+<p>在这个阶段，所有的基元都被光栅化，即在窗口中被转换成像素。 每个对象中的每条可见线和三角形都进入屏幕空间中的光栅化器，随时可以进行转换。 与纹理关联的那些三角形将使用该纹理（图像）应用于它们。 通过Z-buffer算法解析可见性，以及可选的alpha和模板测试。 每个对象依次处理，然后最终的图像显示在屏幕上。</p>
+<h2 id="26-结论"><strong>2.6 结论</strong></h2>
+<p>数十年来API和图形硬件的发展是针对实时渲染应用而产生的。 需要注意的是，这不是唯一可能的渲染流水线; 离线渲染管道经历了不同的进化路径。 对于电影制作的渲染最常用微多边形管线进行[196,1236]。 学术研究和预测性渲染应用（如建筑预览）通常使用光线追踪渲染器（请参见第9.8.2节）。</p>
+<p>多年来，开发者使用这个过程的唯一方法是通过固定管线fixed-function pipeline。这样命名是因为实现这个管线的硬件是不可编程的。流水线的各个部分可以设置为不同的状态，例如，可以打开或关闭Z缓冲区测试，但是没有能力编写程序来控制在各个阶段应用功能的顺序。 任天堂的Wii最新（也可能是最后一个）固定功能机的例子。 可编程GPU可以准确确定在整个流水线中各种子系统中应用的操作。在研究固定功能流水线时，可以合理地介绍一些基本原则，但大多数新发展都针对可编程GPU。 这种可编程性是本书第三版的默认的，因为它是充分利用GPU的现代方式。</p>
+<h2 id="27-进阶阅读和资源"><strong>2.7 进阶阅读和资源</strong></h2>
+<p>Blinn的书“A Trip Down the Graphics Pipeline”[105]是一本关于从头开始编写软件渲染器的旧书，但是它是了解实现渲染管道的一些细节的好资源。 对于固定功能流水线，古老的（但经常更新的）OpenGL编程指南OpenGL Programming Guide（又名“红皮书”）[969]提供了与固定功能流水线相关的固定功能流水线和算法的全面描述。 我们的书的网站http://www.realtimerendering.com提供了各种渲染引擎实现的链接。</p>
+
+
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/article/排序算法总结/" data-toggle="tooltip" data-placement="top"
+                            title="排序算法总结">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/article/C# Unity游戏开发——Excel中的数据是如何到游戏中的 （四）/" data-toggle="tooltip" data-placement="top"
+                            title="C# Unity游戏开发——Excel中的数据是如何到游戏中的 （三）">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                <div class="social-share" data-wechat-qrcode-helper="" align="center"></div>
+                <!--  css & js -->
+                <link rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                <script
+                    src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>
+
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+                            <!--PC版-->
+                <div id="SOHUCS"></div>
+                <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js"></script>
+                <script type="text/javascript">
+                    window.changyan.api.config({
+                        appid: 'cyu9nvd1H',
+                        conf: 'prod_d3b08d9d4b47e765df1a513bcd38865c'
+                    });
+                </script>
+            </div>
+
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#21-体系结构"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><strong>2.1 &#x4F53;&#x7CFB;&#x7ED3;&#x6784;</strong></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#22-应用程序阶段-application-stage"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><strong>2.2 &#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x9636;&#x6BB5; Application Stage</strong></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#23-几何阶段-geometry-stage"><span class="toc-nav-number">3.</span> <span class="toc-nav-text"><strong>2.3 &#x51E0;&#x4F55;&#x9636;&#x6BB5; Geometry Stage</strong></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#24-光栅化阶段-rasterizer-stage"><span class="toc-nav-number">4.</span> <span class="toc-nav-text"><strong>2.4 &#x5149;&#x6805;&#x5316;&#x9636;&#x6BB5; Rasterizer Stage</strong></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#25-管线总览"><span class="toc-nav-number">5.</span> <span class="toc-nav-text"><strong>2.5 &#x7BA1;&#x7EBF;&#x603B;&#x89C8;</strong></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#26-结论"><span class="toc-nav-number">6.</span> <span class="toc-nav-text"><strong>2.6 &#x7ED3;&#x8BBA;</strong></span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#27-进阶阅读和资源"><span class="toc-nav-number">7.</span> <span class="toc-nav-text"><strong>2.7 &#x8FDB;&#x9636;&#x9605;&#x8BFB;&#x548C;&#x8D44;&#x6E90;</strong></span></a></li></ol>
+        
+        </div>
+      </aside>
+    
+
+
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#图形学"
+                            title="图形学">图形学</a>
+                        
+                        <a class="tag" href="/tags/#渲染管线"
+                            title="渲染管线">渲染管线</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                    <li><a href="https://www.cnblogs.com/fly-100/" target="_blank">博客园 追峰人</a></li>
+                    
+                    <li><a href="https://www.zhihu.com/people/daboss007" target="_blank">知乎 李志雄</a></li>
+                    
+                    <li><a href="https://github.com/zxlii" target="_blank">Github zxlii</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js", function () {
+        anchors.options = {
+            visible: 'hover',
+            placement: 'left',
+            icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link {
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top: -0.1em;
+        }
+    }
+</style>
+
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+                    
+
+                    
+
+                    
+
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zxlii">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 追风人 2019
+                    <!-- <br>
+                    Theme by <a href="http://beantech.org">BeanTech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://www.huweihuang.com">胡伟煌</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe> -->
+                </p>
+                <!-- GoStats Simple HTML Based Code -->
+                <p class="copyright text-muted">
+                    访问数：
+                    <a target="_blank" title="web site traffic statistics" href="http://www.gostats.org"><img
+                            alt="web site traffic statistics" src="//www.gostats.org/0.png?a=701070455&ct=4&ci=41"
+                            style="border-width:0" />
+                    </a>
+                </p>
+                <!-- End GoStats Simple HTML Based Code -->
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if ($('#tag_cloud').length !== 0) {
+        async("http://www.lizhixiong.net/js/jquery.tagcloud.js", function () {
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: { start: '#bbbbee', end: '#0085a1' },
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?" + _baId;
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://www.lizhixiong.net/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

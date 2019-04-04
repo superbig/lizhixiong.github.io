@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          C# 堆栈和堆 Heap &amp; Stack - 追风人 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://www.lizhixiong.net/article/C# 堆栈和堆 Heap &amp; Stack/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#C#" title="C#">C#</a>
+                            
+                              <a class="tag" href="/tags/#Mono" title="Mono">Mono</a>
+                            
+                        </div>
+                        <h1>C# 堆栈和堆 Heap &amp; Stack</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 追风人 on
+                            2015-06-09
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">追风人</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>首先堆栈和堆（托管堆）都在进程的虚拟内存中。（在32位处理器上每个进程的虚拟内存为4GB）</p>
+<p><strong>堆栈stack</strong></p>
+<p>堆栈中存储值类型。</p>
+<p>堆栈实际上是向下填充，即由高内存地址指向低内存地址填充。</p>
+<p>堆栈的工作方式是先分配内存的变量后释放（先进后出原则）。</p>
+<p>堆栈中的变量是从下向上释放，这样就保证了堆栈中先进后出的规则不与变量的生命周期起冲突！</p>
+<p>堆栈的性能非常高，但是对于所有的变量来说还不太灵活，而且变量的生命周期必须嵌套。</p>
+<p>通常我们希望使用一种方法分配内存来存储数据，并且方法退出后很长一段时间内数据仍然可以使用。此时就要用到堆（托管堆）！</p>
+<p><strong>堆（托管堆）heap</strong></p>
+<p>堆（托管堆）存储引用类型。</p>
+<p>此堆非彼堆，.NET中的堆由垃圾收集器自动管理。</p>
+<p>与堆栈不同，堆是从下往上分配，所以自由的空间都在已用空间的上面。</p>
+<p>比如创建一个对象：</p>
+<p>Customer cus;</p>
+<p>cus = new Customer();</p>
+<p>申明一个Customer的引用cus，在堆栈上给这个引用分配存储空间。这仅仅只是一个引用，不是实际的Customer对象！</p>
+<p>cus占4个字节的空间，包含了存储Customer的引用地址。</p>
+<p>接着分配堆上的内存以存储Customer对象的实例，假定Customer对象的实例是32字节，为了在堆上找到一个存储Customer对象的存储位置。</p>
+<p>.NET运行库在堆中搜索第一个从未使用的，32字节的连续块存储Customer对象的实例！</p>
+<p>然后把分配给Customer对象实例的地址赋给cus变量！</p>
+<p>从这个例子中可以看出，建立对象引用的过程比建立值变量的过程复杂，且不能避免性能的降低！</p>
+<p>实际上就是.NET运行库保存对的状态信息，在堆中添加新数据时，堆栈中的引用变量也要更新。性能上损失很多！</p>
+<p>有种机制在分配变量内存的时候，不会受到堆栈的限制：把一个引用变量的值赋给一个相同类型的变量，那么这两个变量就引用同一个堆中的对象。</p>
+<p>当一个应用变量出作用域时，它会从堆栈中删除。但引用对象的数据仍然保留在堆中，一直到程序结束 或者 该数据不被任何变量应用时，垃圾收集器会删除它。</p>
+<p>​</p>
+<p>装箱转化</p>
+<p>using System;</p>
+<p>class Boxing</p>
+<p>{</p>
+<p>public static void Main()</p>
+<p>{ int i=110;</p>
+<p>​    object obj=i;</p>
+<p>​    i=220;</p>
+<p>​    Console.WriteLine(“i={0},obj={1}”,i,obj);</p>
+<p>​    obj=330;</p>
+<p>​    Console.WriteLine(“i={0},obj={1}”,i,obj);</p>
+<p>}</p>
+<p>}</p>
+<p>定义整数类型变量I的时候，这个变量占用的内存是内存栈中分配的，第二句是装箱操作将变量 110存放到了内存堆中，而定义object对象类型的变量obj则在内存栈中，并指向int类型的数值110，而该数值是付给变量i的数值副本。</p>
+<p>所以运行结果是</p>
+<p>i=220,obj=110</p>
+<p>i=220,obj=330</p>
+<p>内存格局通常分为四个区</p>
+<p>全局数据区：存放全局变量，静态数据，常量</p>
+<p>代码区：存放所有的程序代码</p>
+<p>栈区：存放为运行而分配的局部变量，参数，返回数据，返回地址等，</p>
+<p>堆区：即自由存储区</p>
+<p>值类型变量与引用类型变量的内存分配模型也不一样。为了理解清楚这个问题，读者首</p>
+<p>先必须区分两种不同类型的内存区域：线程堆栈（Thread Stack）和托管堆（Managed Heap）。</p>
+<p>每个正在运行的程序都对应着一个进程（process），在一个进程内部，可以有一个或多</p>
+<p>个线程（thread），每个线程都拥有一块“自留地”，称为“线程堆栈”，大小为1M，用于保</p>
+<p>存自身的一些数据，比如函数中定义的局部变量、函数调用时传送的参数值等，这部分内存</p>
+<p>区域的分配与回收不需要程序员干涉。</p>
+<p>所有值类型的变量都是在线程堆栈中分配的。</p>
+<p>另一块内存区域称为“堆（heap）”，<a href="http://xn--3ds.NET" target="_blank" rel="noopener">在.NET</a> 这种托管环境下，堆由CLR 进行管理，所</p>
+<p>以又称为“托管堆（managed heap）”。</p>
+<p>用new 关键字创建的类的对象时，分配给对象的内存单元就位于托管堆中。</p>
+<p>在程序中我们可以随意地使用new 关键字创建多个对象，因此，托管堆中的内存资源</p>
+<p>是可以动态申请并使用的，当然用完了必须归还。</p>
+<p>打个比方更易理解：托管堆相当于一个旅馆，其中的房间相当于托管堆中所拥有的内存</p>
+<p>单元。当程序员用new 方法创建对象时，相当于游客向旅馆预订房间，旅馆管理员会先看</p>
+<p>一下有没有合适的空房间，有的话，就可以将此房间提供给游客住宿。当游客旅途结束，要</p>
+<p>办理退房手续，房间又可以为其他旅客提供服务了。</p>
+<p>从表 1 可以看到，引用类型共有四种：类类型、接口类型、数组类型和委托类型。</p>
+<p>所有引用类型变量所引用的对象，其内存都是在托管堆中分配的。</p>
+<p>严格地说，我们常说的“对象变量”其实是类类型的引用变量。但在实际中人们经常将</p>
+<p>引用类型的变量简称为“对象变量”，用它来指代所有四种类型的引用变量。在不致于引起</p>
+<p>混淆的情况下，本书也采用了这种惯例。</p>
+<p>在了解了对象内存模型之后，对象变量之间的相互赋值的含义也就清楚了。请看以下代</p>
+<p>码（示例项目ReferenceVariableForCS）：</p>
+<p>class A</p>
+<p>02 {</p>
+<p>03 public int i;</p>
+<p>04 }</p>
+<p>05 class Program</p>
+<p>06 {</p>
+<p>07 static void Main(string[] args)</p>
+<p>08 {</p>
+<p>09 A a ;</p>
+<p>10 a= new A();</p>
+<p>11 a.i = 100;</p>
+<p>12 A b＝null;</p>
+<p>13 b = a; //对象变量的相互赋值</p>
+<p>14 Console.WriteLine(“b.i=” + b.i); <a href="//b.i=">//b.i=</a>?</p>
+<p>15 }</p>
+<p>16 }</p>
+<p>注意第12 和13 句。</p>
+<p>程序的运行结果是：</p>
+<p>b.i=100;</p>
+<p>请读者思索一下：两个对象变量的相互赋值意味着什么？</p>
+<p>事实上，两个对象变量的相互赋值意味着赋值后两个对象变量所占用的内存单元其内容</p>
+<p>是相同的。</p>
+<p>讲得详细一些：</p>
+<p>第10 句创建对象以后，其首地址（假设为“1234 5678”）被放入到变量a 自身的4 个</p>
+<p>字节的内存单元中。</p>
+<p>第12 句又定义了一个对象变量b，其值最初为null（即对应的4 个字节内存单元中为</p>
+<p>“0000 0000”）。</p>
+<p>第13 句执行以后，a 变量的值被复制到b 的内存单元中，现在，b 内存单元中的值也为</p>
+<p>“1234 5678”。</p>
+<p>根据前面介绍的对象内存模型，我们知道现在变量a 和b 都指向同一个实例对象。</p>
+<p>如果通过b.i 修改字段i 的值，a.i 也会同步变化，因为a.i 与b.i 其实代表同一对象的同</p>
+<p>一字段。</p>
+<p>整个过程可以用图 9 来说明：</p>
+<p>图 <img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812172762.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p>图 9 对象变量的相互赋值</p>
+<p>由此得到一个重要结论：</p>
+<p>对象变量的相互赋值不会导致对象自身被复制，其结果是两个对象变量指向同一对象。</p>
+<p>另外，由于对象变量本身是一个局部变量，因此，对象变量本身是位于线程堆栈中的。</p>
+<p>严格区分对象变量与对象变量所引用的对象，是面向对象编程的关键之一。</p>
+<p>由于对象变量类似于一个对象指针，这就产生了“判断两个对象变量是否引用同一对象”</p>
+<p>的问题。</p>
+<p>C#使用“＝＝”运算符比对两个对象变量是否引用同一对象，“!=”比对两个对象变量</p>
+<p>22</p>
+<p>是否引用不同的对象。参看以下代码：</p>
+<p>//a1与a2引用不同的对象</p>
+<p>A a1= new A();</p>
+<p>A a2= new A();</p>
+<p>Console.WriteLine(a1 == a2);//输出：false</p>
+<p>a2 = a1;//a1与a2引用相同的对象</p>
+<p>Console.WriteLine(a1 == a2);//输出：true</p>
+<p>需要注意的是，如果“＝＝”被用在值类型的变量之间，则比对的是变量的内容：</p>
+<p>int i = 0;</p>
+<p>int j = 100;</p>
+<p>if (i == j)</p>
+<p>{</p>
+<p>Console.WriteLine(“i与j的值相等”);</p>
+<p>}</p>
+<p>理解值类型与引用类型的区别在面向对象编程中非常关键。</p>
+<p>1、类型，对象，堆栈和托管堆</p>
+<p>C#的类型和对象在应用计算机内存时，大体用到两种内存，一个</p>
+<p>叫堆栈，另一个叫托管堆，下面我们用直角长方形来代表堆栈，</p>
+<p>用圆角长方形来代表托管堆。</p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812234764.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p>首先讨论一下方法内部变量的存放。</p>
+<p>先举个例子，有如下两个方法，Method_1 和Add，分别如下：</p>
+<p>public void Method_1()</p>
+<p>{</p>
+<p>int value1=10; //1</p>
+<p>int value2=20; //2</p>
+<p>int value3=Add(value,value); //3</p>
+<p>}</p>
+<p>public int Add(int n1,int n2)//4</p>
+<p>{</p>
+<p>rnt sum=n1+n2;//5</p>
+<p>return sum;//6</p>
+<p>}</p>
+<p>这段代码的执行，用图表示为：</p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812302922.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812310763.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p>上述的每个图片，基本对应程序中的每个步骤。在开始执行Met</p>
+<p>hod_1的时候，先把value1 压入堆栈顶，然后是value2，接</p>
+<p>下来的是调用方法Add，因为方法有两个参数是n1 和n2，所以</p>
+<p>把n1 和n2 分别压入堆栈，因为此处是调用了一个方法，并且方</p>
+<p>法有返回值，所以这里需要保存Add的返回地址，然后进入Ad</p>
+<p>d方法内部，在Add内部，首先是给sum 赋值，所以把sum 压</p>
+<p>入栈项，然后用return 返回，此时，先前的返回地址就起到了</p>
+<p>作用，return 会根据地址返回去的，在返回的过程中，把sum</p>
+<p>推出栈顶，找到了返回地址，但在Method_1 方法中，我们希望</p>
+<p>把Add的返回值赋给value3，此时的返回地址也被推出堆栈，</p>
+<p>把value3 压入堆栈。虽这个例子的结果在这里没有多大用途，</p>
+<p>但这个例子很好的说明了在方法被执行时，变量与进出堆栈的情</p>
+<p>况。这里也能看出为什么方法内部的局变量用过后，不能在其他</p>
+<p>方法中访问的原因。</p>
+<p>其次来讨论一下类和对象在托管堆和堆栈中的情况。</p>
+<p>先看一下代码：</p>
+<p>class Car</p>
+<p>{</p>
+<p>public void Run()</p>
+<p>{</p>
+<p>Console.WriteLine(“一切正常”);</p>
+<p>}</p>
+<p>public virtual double GetPrice()</p>
+<p>{</p>
+<p>return 0;</p>
+<p>}</p>
+<p>public static void Purpose()</p>
+<p>{</p>
+<p>Console.WriteLine(“载人”);</p>
+<p>}</p>
+<p>PDF 文件使用 “pdfFactory Pro” 试用版本创建 fw w w . f i n e p <a href="http://rint.cn" target="_blank" rel="noopener">rint.cn</a></p>
+<p>}</p>
+<p>class BMW : Car</p>
+<p>{</p>
+<p>public override double GetPrice()</p>
+<p>{</p>
+<p>return 800000;</p>
+<p>}</p>
+<p>}</p>
+<p>上面是两个类，一个Father一个Son，Son 继承了Father，</p>
+<p>因为你类中有一个virtual的BuyHouse 方法，所以Son类可以重</p>
+<p>写这个方法。</p>
+<p>下面接着看调用代码。</p>
+<p>public void Method_A()</p>
+<p>{</p>
+<p>double CarPrice;//1</p>
+<p>Car car = new BMW();//2</p>
+<p>CarPrice = car.GetPrice();//调用虚方法（其实调用的是重写后</p>
+<p>的方法）</p>
+<p>car.Run();//调用实例化方法</p>
+<p>Car.Purpose();//调用静态方法</p>
+<p>}</p>
+<p>这个方法也比较简单，就是定义一个变量用来获得价格，同时</p>
+<p>定义了一个父类的变量，用子类来实例化它。</p>
+<p>接下来，我们分步来说明。</p>
+<p>看一下运行时堆栈和托管堆的情部我</p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812345524.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p>这里需要说明的是，类是位于托管堆中的，每个类又分为四个</p>
+<p>类部，类指针，用来关联对象；同步索引，用来完成同步(比如线</p>
+<p>程的同步)需建立的；静态成员是属于类的，所以在类中出现，还</p>
+<p>有一个方法列表（这里的方法列表项与具体的方法对应）。</p>
+<p>当Method_A方法的第一步执行时：</p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812353748.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p>这时的CarPrice 是没有值的</p>
+<p>当Method_A方法执行到第二步，其实第二步又可以分成</p>
+<p>Car car;</p>
+<p>car = new BMW();</p>
+<p>先看Car car;</p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812371136.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p>car在这里是一个方法内部的变量，所以被压到堆栈中。</p>
+<p>再看 car = new BMW();</p>
+<p>这是一个实例化过程，car变成了一个对象</p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812380931.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p>这里是用子类来实例化父类型。对象其实是子类的类型的，但</p>
+<p>变量的类型是父类的。</p>
+<p>接下来，在Method_A中的调用的中调用car.GetPrice()，</p>
+<p>对于Car来说，这个方法是虚方法（并且子类重写了它），虚方</p>
+<p>法在调用是不会执行类型上的方法，即不会执行Car类中的虚方</p>
+<p>法，而是执行对象对应类上的方法，即BMW中的GtPrice。</p>
+<p>如果Method_A中执行方法Run()，因为Run是普通实例方</p>
+<p>法，所以会执行Car类中的Run 方法。</p>
+<p>如果调用了Method_A的Purpose 方法，即不用变量car调</p>
+<p>用，也不用对象调用，而是用类名Car调用，因为静态方法会在</p>
+<p>类中分配内存的。如果用Car生成多个实例，静态成员只有一份，</p>
+<p>就是在类中，而不是在对象中。</p>
+<p>33333333333333333333333333333333</p>
+<p>在32位的Windows操作系统中，每个进程都可以使用4GB的内存，这得益于虚拟寻址技术，在这4GB的内存中存储着可执行代码、代码加载的DLL和程序运行的所有变量，在C#中，虚拟内存中有个两个存储变量的区域，一个称为堆栈，一个称为托管堆，托管堆的出现是.net不同于其他语言的地方，堆栈存储值类型数据，而托管堆存储引用类型如类、对象，并受垃圾收集器的控制和管理。在堆栈中，一旦变量超出使用范围，其使用的内存空间会被其他变量重新使用，这时其空间中存储的值将被其他变量覆盖而不复存在，但有时候我们希望这些值仍然存在，这就需要托管堆来实现。我们用几段代码来说明其工作原理，假设已经定义了一个类class1:</p>
+<p>class1 object1;</p>
+<p>object1=new class1();</p>
+<p>第一句定义了一个class1的引用，实质上只是在堆栈中分配了一个4个字节的空间，它将用来存府后来实例化对象在托管堆中的地址，在windows中这需要4个字节来表示内存地址。第二句实例化object1对象，实际上是在托管堆中开僻了一个内存空间来存储类class1的一个具体对象，假设这个对象需要36个字节，那么object1指向的实际上是在托管堆一个大小为36个字节的连续内存空间开始的地址。由此也可以看出在C#编译器中为什么不允许使用未实例化的对象，因为这个对象在托管堆中还不存在。当对象不再使用时，这个被存储在堆栈中的引用变量将被删除，但是从上述机制可以看出，在托管堆中这个引用指向的对象仍然存在，其空间何时被释放取决垃圾收集器而不是引用变量失去作用域时。</p>
+<p>在使用电脑的过程中大家可能都有过这种经验：电脑用久了以后程序运行会变得越来越慢，其中一个重要原因就是系统中存在大量内存碎片，就是因为程序反复在堆栈中创建和释入变量，久而久之可用变量在内存中将不再是连续的内存空间，为了寻址这些变量也会增加系统开销。在.net中这种情形将得到很大改善，这是因为有了垃圾收集器的工作，垃圾收集器将会压缩托管堆的内存空间，保证可用变量在一个连续的内存空间内，同时将堆栈中引用变量中的地址改为新的地址，这将会带来额外的系统开销，但是，其带来的好处将会抵消这种影响，而另外一个好处是，程序员将不再花上大量的心思在内在泄露问题上。</p>
+<p>当然，以C#程序中不仅仅只有引用类型的变量，仍然也存在值类型和其他托管堆不能管理的对象，如果文件名柄、网络连接和数据库连接，这些变量的释放仍需要程序员通过析构函数或IDispose接口来做。</p>
+<p>另一方面，在某些时候C#程序也需要追求速度，比如对一个含用大量成员的数组的操作，如果仍使用传统的类来操作，将不会得到很好的性能，因为数组在C#中实际是System.Array的实例，会存储在托管堆中，这将会对运算造成大量的额外的操作，因为除了垃圾收集器除了会压缩托管堆、更新引用地址、还会维护托管堆的信息列表。所幸的是C#中同样能够通过不安全代码使用C++程序员通常喜欢的方式来编码，在标记为unsafe的代码块使用指针，这和在C++中使用指针没有什么不同，变量也是存府在堆栈中，在这种情况下声明一个数组可以使用stackalloc语法，比如声明一个存储有50个double类型的数组：</p>
+<p>double* pDouble=stackalloc double[50]</p>
+<p>stackalloc会给pDouble数组在堆栈中分配50个double类型大小的内存空间，可以使用pDouble[0]、*(pDouble+1)这种方式操作数组，与在C++中一样，使用指针时必须知道自己在做什么，确保访问的正确的内存空间，否则将会出现无法预料的错误。</p>
+<p>掌握托管堆、堆栈、垃圾收集器和不安全代码的工作原理和方式，将有助于你成为真正的优秀C#程序员。</p>
+<p>进程中每个线程都有自己的堆栈，这是一段线程创建时保留下的地址区域。我们的“栈内存”即在此。至于“堆”内存，我个人认为在未用new定义时，堆应该就是未“保留”未“提交”的自由空间，new的功能是在这些自由空间中保留（并提交？）出一个地址范围</p>
+<p>栈(Stack)是操作系统在建立某个进程时或者线程（在支持多线程的操作系统中是线程）为这个线程建立的存储区域，该区域具有FIFO的特性，在编译的时候可以指定需要的Stack的大小。在编程中，例如C/C++中，所有的局部变量都是从栈中分配内存空间，实际上也不是什么分配，只是从栈顶向上用就行，在退出函数的时候，只是修改栈指针就可以把栈中的内容销毁，所以速度最快。<br>
+堆（Heap)是应用程序在运行的时候请求操作系统分配给自己内存，一般是申请/给予的过程，C/C++分别用malloc/New请求分配Heap，用free/delete销毁内存。由于从操作系统管理的内存分配所以在分配和销毁时都要占用时间，所以用堆的效率低的多！但是堆的好处是可以做的很大，C/C++对分配的Heap是不初始化的。<br>
+在Java中除了简单类型（int,char等）都是在堆中分配内存，这也是程序慢的一个主要原因。但是跟C/C++不同，Java中分配Heap内存是自动初始化的。在Java中所有的对象（包括int的wrapper   Integer）都是在堆中分配的，但是这个对象的引用却是在Stack中分配。也就是说在建立一个对象时从两个地方都分配内存，在Heap中分配的内存实际建立这个对象，而在Stack中分配的内存只是一个指向这个堆对象的指针（引用）而已。</p>
+<p>在.NET的所有技术中，最具争议的恐怕是垃圾收集(Garbage Collection，GC)了。作为.NET框架中一个重要的部分，托管堆和垃圾收集机制对我们中的大部分人来说是陌生的概念。在这篇文章中将要讨论托管堆，和你将从中得到怎样的好处。<br>
+　　为什么要托管堆？<br>
+　　.NET框架包含一个托管堆，所有的.NET语言在分配引用类型对象时都要使用它。像值类型这样的轻量级对象始终分配在栈中，但是所有的类实例和数组都被生成在一个内存池中，这个内存池就是托管堆。<br>
+　　垃圾收集器的基本算法很简单：<br>
+　　● 将所有的托管内存标记为垃圾<br>
+　　● 寻找正被使用的内存块，并将他们标记为有效<br>
+　　● 释放所有没有被使用的内存块<br>
+　　● 整理堆以减少碎片<br>
+　　托管堆优化<br>
+　　看上去似乎很简单，但是垃圾收集器实际采用的步骤和堆管理系统的其他部分并非微不足道，其中常常涉及为提高性能而作的优化设计。举例来说，垃圾收集遍历整个内存池具有很高的开销。然而，研究表明大部分在托管堆上分配的对象只有很短的生存期，因此堆被分成三个段，称作generations。新分配的对象被放在generation 0中。这个generation是最先被回收的——在这个generation中最有可能找到不再使用的内存，由于它的尺寸很小（小到足以放进处理器的L2 cache中），因此在它里面的回收将是最快和最高效的。<br>
+　　托管堆的另外一种优化操作与locality of reference规则有关。该规则表明，一起分配的对象经常被一起使用。如果对象们在堆中位置很紧凑的话，高速缓存的性能将会得到提高。由于托管堆的天性，对象们总是被分配在连续的地址上，托管堆总是保持紧凑，结果使得对象们始终彼此靠近，永远不会分得很远。这一点与标准堆提供的非托管代码形成了鲜明的对比，在标准堆中，堆很容易变成碎片，而且一起分配的对象经常分得很远。<br>
+　　还有一种优化是与大对象有关的。通常，大对象具有很长的生存期。当一个大对象在.NET托管堆中产生时，它被分配在堆的一个特殊部分中，这部分堆永远不会被整理。因为移动大对象所带来的开销超过了整理这部分堆所能提高的性能。<br>
+　　关于外部资源（External Resources）的问题<br>
+　　垃圾收集器能够有效地管理从托管堆中释放的资源，但是资源回收操作只有在内存紧张而触发一个回收动作时才执行。那么，类是怎样来管理像数据库连接或者窗口句柄这样有限的资源的呢？等待，直到垃圾回收被触发之后再清理数据库连接或者文件句柄并不是一个好方法，这会严重降低系统的性能。<br>
+　　所有拥有外部资源的类，在这些资源已经不再用到的时候，都应当执行Close或者Dispose方法。从Beta2（译注：<a href="http://xn--Beta2-4n1hz75c5vumtbv6kb1bt3d5m778o.NET" target="_blank" rel="noopener">本文中所有的Beta2均是指.NET</a> Framework Beta2，不再特别注明）开始，Dispose模式通过IDisposable接口来实现。这将在本文的后续部分讨论。<br>
+　　需要清理外部资源的类还应当实现一个终止操作（finalizer）。在C#中，创建终止操作的首选方式是在析构函数中实现，而在Framework层，终止操作的实现则是通过重载System.Object.Finalize 方法。以下两种实现终止操作的方法是等效的：<br>
+　　~OverdueBookLocator()<br>
+　　{<br>
+　　 Dispose(false);<br>
+　　}<br>
+　　和：<br>
+　　public void Finalize()<br>
+　　{<br>
+　　 base.Finalize();<br>
+　　 Dispose(false);<br>
+　　}<br>
+　　在C#中，同时在Finalize方法和析构函数实现终止操作将会导致错误的产生。<br>
+　　除非你有足够的理由，否则你不应该创建析构函数或者Finalize方法。终止操作会降低系统的性能，并且增加执行期的内存开销。同时，由于终止操作被执行的方式，你并不能保证何时一个终止操作会被执行。<br>
+　　内存分配和垃圾回收的细节<br>
+　　对GC有了一个总体印象之后，让我们来讨论关于托管堆中的分配与回收工作的细节。托管堆看起来与我们已经熟悉的C++编程中的传统的堆一点都不像。在传统的堆中，数据结构习惯于使用大块的空闲内存。在其中查找特定大小的内存块是一件很耗时的工作，尤其是当内存中充满碎片的时候。与此不同，在托管堆中，内存被组制成连续的数组，指针总是巡着已经被使用的内存和未被使用的内存之间的边界移动。当内存被分配的时候，指针只是简单地递增——由此而来的一个好处是，分配操作的效率得到了很大的提升。<br>
+　　当对象被分配的时候，它们一开始被放在generation 0中。当generation 0的大小快要达到它的上限的时候，一个只在generation 0中执行的回收操作被触发。由于generation 0的大小很小，因此这将是一个非常快的GC过程。这个GC过程的结果是将generation 0彻底的刷新了一遍。不再使用的对象被释放，确实正被使用的对象被整理并移入generation 1中。<br>
+　　当generation 1的大小随着从generation 0中移入的对象数量的增加而接近它的上限的时候，一个回收动作被触发来在generation 0和generation 1中执行GC过程。如同在generation 0中一样，不再使用的对象被释放，正在被使用的对象被整理并移入下一个generation中。大部分GC过程的主要目标是generation 0，因为在generation 0中最有可能存在大量的已不再使用的临时对象。对generation 2的回收过程具有很高的开销，并且此过程只有在generation 0和generation 1的GC过程不能释放足够的内存时才会被触发。如果对generation 2的GC过程仍然不能释放足够的内存，那么系统就会抛出OutOfMemoryException异常<br>
+　　带有终止操作的对象的垃圾收集过程要稍微复杂一些。当一个带有终止操作的对象被标记为垃圾时，它并不会被立即释放。相反，它会被放置在一个终止队列（finalization queue）中，此队列为这个对象建立一个引用，来避免这个对象被回收。后台线程为队列中的每个对象执行它们各自的终止操作，并且将已经执行过终止操作的对象从终止队列中删除。只有那些已经执行过终止操作的对象才会在下一次垃圾回收过程中被从内存中删除。这样做的一个后果是，等待被终止的对象有可能在它被清除之前，被移入更高一级的generation中，从而增加它被清除的延迟时间。<br>
+　　需要执行终止操作的对象应当实现IDisposable接口，以便客户程序通过此接口快速执行终止动作。IDisposable接口包含一个方法——Dispose。这个被Beta2引入的接口，采用一种在Beta2之前就已经被广泛使用的模式实现。从本质上讲，一个需要终止操作的对象暴露出Dispose方法。这个方法被用来释放外部资源并抑制终止操作，就象下面这个程序片断所演示的那样：<br>
+　　public class OverdueBookLocator: IDisposable<br>
+　　{<br>
+　　 ~OverdueBookLocator()<br>
+　　 {<br>
+　　 InternalDispose(false);<br>
+　　 }<br>
+　　 public void Dispose()<br>
+　　 {<br>
+　　 InternalDispose(true);<br>
+　　 }<br>
+　　 protected void InternalDispose(bool disposing)<br>
+　　 {<br>
+　　 if(disposing)<br>
+　　 {<br>
+　　 GC.SuppressFinalize(this);<br>
+　　 // Dispose of managed objects if disposing.<br>
+　　 }<br>
+　　 // free external resources here<br>
+　　 }<br>
+　　}<br>
+在.NET的所有技术中，最具争议的恐怕是垃圾收集(Garbage Collection，GC)了。作为.NET框架中一个重要的部分，托管堆和垃圾收集机制对我们中的大部分人来说是陌生的概念。在这篇文章中将要讨论托管堆，和你将从中得到怎样的好处。 为什么要托管堆？ .NET框架包含一个托管堆，所有的.NET语言在分配引用类型对象时都要使用它。像值类型这样的轻量级对象始终分配在栈中，但是所有的类实例和数组都被生成在一个内存池中，这个内存池就是托管堆。 垃圾收集器的基本算法很简单： ● 将所有的托管内存标记为垃圾 ● 寻找正被使用的内存块，并将他们标记为有效 ● 释放所有没有被使用的内存块 ● 整理堆以减少碎片 托管堆优化 看上去似乎很简单，但是垃圾收集器实际采用的步骤和堆管理系统的其他部分并非微不足道，其中常常涉及为提高性能而作的优化设计。举例来说，垃圾收集遍历整个内存池具有很高的开销。然而，研究表明大部分在托管堆上分配的对象只有很短的生存期，因此堆被分成三个段，称作generations。新分配的对象被放在generation 0中。这个generation是最先被回收的——在这个generation中最有可能找到不再使用的内存，由于它的尺寸很小（小到足以放进处理器的L2 cache中），因此在它里面的回收将是最快和最高效的。 托管堆的另外一种优化操作与locality of reference规则有关。该规则表明，一起分配的对象经常被一起使用。如果对象们在堆中位置很紧凑的话，高速缓存的性能将会得到提高。由于托管堆的天性，对象们总是被分配在连续的地址上，托管堆总是保持紧凑，结果使得对象们始终彼此靠近，永远不会分得很远。这一点与标准堆提供的非托管代码形成了鲜明的对比，在标准堆中，堆很容易变成碎片，而且一起分配的对象经常分得很远。 还有一种优化是与大对象有关的。通常，大对象具有很长的生存期。当一个大对象在.NET托管堆中产生时，它被分配在堆的一个特殊部分中，这部分堆永远不会被整理。因为移动大对象所带来的开销超过了整理这部分堆所能提高的性能。 关于外部资源（External Resources）的问题 垃圾收集器能够有效地管理从托管堆中释放的资源，但是资源回收操作只有在内存紧张而触发一个回收动作时才执行。那么，类是怎样来管理像数据库连接或者窗口句柄这样有限的资源的呢？等待，直到垃圾回收被触发之后再清理数据库连接或者文件句柄并不是一个好方法，这会严重降低系统的性能。 所有拥有外部资源的类，在这些资源已经不再用到的时候，都应当执行Close或者Dispose方法。从Beta2（译注：<a href="http://xn--Beta2-4n1hz75c5vumtbv6kb1bt3d5m778o.NET" target="_blank" rel="noopener">本文中所有的Beta2均是指.NET</a> Framework Beta2，不再特别注明）开始，Dispose模式通过IDisposable接口来实现。这将在本文的后续部分讨论。 需要清理外部资源的类还应当实现一个终止操作（finalizer）。在C#中，创建终止操作的首选方式是在析构函数中实现，而在Framework层，终止操作的实现则是通过重载System.Object.Finalize 方法。以下两种实现终止操作的方法是等效的： ~OverdueBookLocator() { Dispose(false); } 和： public void Finalize() { base.Finalize(); Dispose(false); } 在C#中，同时在Finalize方法和析构函数实现终止操作将会导致错误的产生。 除非你有足够的理由，否则你不应该创建析构函数或者Finalize方法。终止操作会降低系统的性能，并且增加执行期的内存开销。同时，由于终止操作被执行的方式，你并不能保证何时一个终止操作会被执行。 内存分配和垃圾回收的细节 对GC有了一个总体印象之后，让我们来讨论关于托管堆中的分配与回收工作的细节。托管堆看起来与我们已经熟悉的C++编程中的传统的堆一点都不像。在传统的堆中，数据结构习惯于使用大块的空闲内存。在其中查找特定大小的内存块是一件很耗时的工作，尤其是当内存中充满碎片的时候。与此不同，在托管堆中，内存被组制成连续的数组，指针总是巡着已经被使用的内存和未被使用的内存之间的边界移动。当内存被分配的时候，指针只是简单地递增——由此而来的一个好处是，分配操作的效率得到了很大的提升。 当对象被分配的时候，它们一开始被放在generation 0中。当generation 0的大小快要达到它的上限的时候，一个只在generation 0中执行的回收操作被触发。由于generation 0的大小很小，因此这将是一个非常快的GC过程。这个GC过程的结果是将generation 0彻底的刷新了一遍。不再使用的对象被释放，确实正被使用的对象被整理并移入generation 1中。 当generation 1的大小随着从generation 0中移入的对象数量的增加而接近它的上限的时候，一个回收动作被触发来在generation 0和generation 1中执行GC过程。如同在generation 0中一样，不再使用的对象被释放，正在被使用的对象被整理并移入下一个generation中。大部分GC过程的主要目标是generation 0，因为在generation 0中最有可能存在大量的已不再使用的临时对象。对generation 2的回收过程具有很高的开销，并且此过程只有在generation 0和generation 1的GC过程不能释放足够的内存时才会被触发。如果对generation 2的GC过程仍然不能释放足够的内存，那么系统就会抛出OutOfMemoryException异常 带有终止操作的对象的垃圾收集过程要稍微复杂一些。当一个带有终止操作的对象被标记为垃圾时，它并不会被立即释放。相反，它会被放置在一个终止队列（finalization queue）中，此队列为这个对象建立一个引用，来避免这个对象被回收。后台线程为队列中的每个对象执行它们各自的终止操作，并且将已经执行过终止操作的对象从终止队列中删除。只有那些已经执行过终止操作的对象才会在下一次垃圾回收过程中被从内存中删除。这样做的一个后果是，等待被终止的对象有可能在它被清除之前，被移入更高一级的generation中，从而增加它被清除的延迟时间。 需要执行终止操作的对象应当实现IDisposable接口，以便客户程序通过此接口快速执行终止动作。IDisposable接口包含一个方法——Dispose。这个被Beta2引入的接口，采用一种在Beta2之前就已经被广泛使用的模式实现。从本质上讲，一个需要终止操作的对象暴露出Dispose方法。这个方法被用来释放外部资源并抑制终止操作，就象下面这个程序片断所演示的那样： public class OverdueBookLocator: IDisposable { ~OverdueBookLocator() { InternalDispose(false); } public void Dispose() { InternalDispose(true); } protected void InternalDispose(bool disposing) { if(disposing) { GC.SuppressFinalize(this); // Dispose of managed objects if disposing. } // free external resources here } }</p>
+<p>这些都是.NET中CLR的概念，和C#没多大关系。<br>
+使用基于CLR的语言编译器开发的代码称为托管代码。<br>
+托管堆是CLR中自动内存管理的基础。初始化新进程时，运行时会为进程保留一个连续的地址空间区域。这个保留的地址空间被称为托管堆。托管堆维护着一个指针，用它指向将在堆中分配的下一个对象的地址。最初，该指针设置为指向托管堆的基址。<br>
+认真看MSDN Library，就会搞清楚这些概念。</p>
+<p>以下代码说明的很形象：</p>
+<p>//引用类型(‘class’ 类类型)<br>
+class SomeRef { public int32 x;}</p>
+<p>//值类型(‘struct’)<br>
+struct SomeVal(pulic Int32 x;}</p>
+<p>static void ValueTypeDemo()<br>
+{<br>
+SomeRef r1=new SomeRef();//分配在托管堆<br>
+SomeVal v1=new SomeVal();//堆栈上<br>
+r1.x=5;//解析指针<br>
+v1.x=5;//在堆栈上修改</p>
+<p>SomeRef r2=r1;//仅拷贝引用(指针)<br>
+SomeVal v2=v1;//先在堆栈上分配,然后拷贝成员</p>
+<p>r1.x=8;//改变了r1,r2的值<br>
+v1.x=9;//改变了v1,没有改变v2<br>
+}</p>
+<p>4444444444444444444444444444444444444444444444444444444</p>
+<p>栈是内存中完全用于存储局部变量或成员字段（值类型数据）的高效的区域，但其大小有限制。</p>
+<p>托管堆所占内存比栈大得多，当访问速度较慢。托管堆只用于分配内存，一般由CLR（Common Language Runtime）来处理内存释放问题。</p>
+<p>当创建值类型数据时，在栈上分配内存；</p>
+<p>当创建引用型数据时，在托管堆上分配内存并返回对象的引用。注意这个对象的引用，像其他局部变量一样也是保存在栈中的。该引用指向的值则位于托管堆中。</p>
+<p>如果创建了一个包含值类型的引用类型，比如数组，其元素的值也是存放在托管堆中而非栈中的。当从数组中检索数据时，获得本地使用的元素值的副本，而该副本这时候就是存放在栈中的了。所以，不能笼统的说“值类型保存在栈中，引用类型保存在托管堆中”。</p>
+<p>值类型和引用类型的区别：引用类型存储在托管堆的唯一位置中，其存在于托管堆中某个地方，由使用该实体的变量引用；而值类型存储在使用它们的地方，有几处在使用，就有几个副本存在。</p>
+<p>对于引用类型，如果在声明变量的时候没有使用new运算符，运行时就不会给它分配托管堆上的内存空间，而是在栈上给它分配一个包含null值的引用。对于值类型，运行时会给它分配栈上的空间，并调用默认的构造函数，来初始化对象的状态。</p>
+<p>55555555555555555555555555555555555555555555555555</p>
+<p>一、栈和托管堆</p>
+<p>​    通用类型系统(CTS)区分两种基本类型：值类型和引用类型。它们之间的根本区别在于它们在内存中的存储方式。.NET使用两种不同的物理内存块来存储数据—栈和托管堆。如下图所示：</p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812411736.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812420573.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p>二  类型层次结构</p>
+<p>CTS定义了一种类型层次结构，该结构不仅仅描述了不同的预定义类型，还指出了用户定义类型在层次结构种的</p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812435468.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812441562.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812443528.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p><img src="http://pic002.cnblogs.com/img/291099657/200907/2009070812445698.jpg" alt="堆栈和托管堆 c  - 蒾亽迗哋 - 歡迎茪臨"></p>
+<p>文章来自：<a href="http://www.cnblogs.com/shenfengok/archive/2011/09/06/2169306.html" target="_blank" rel="noopener">http://www.cnblogs.com/shenfengok/archive/2011/09/06/2169306.html</a></p>
+
+
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/article/Unity UGUI —— 鼠标穿透UI问题（Unity官方的解决方法）/" data-toggle="tooltip" data-placement="top"
+                            title="Unity UGUI —— 鼠标穿透UI问题（Unity官方的解决方法）">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/article/Unity UGUI —— 无限循环List/" data-toggle="tooltip" data-placement="top"
+                            title="Unity UGUI —— 无限循环List">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                <div class="social-share" data-wechat-qrcode-helper="" align="center"></div>
+                <!--  css & js -->
+                <link rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                <script
+                    src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>
+
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+                            <!--PC版-->
+                <div id="SOHUCS"></div>
+                <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js"></script>
+                <script type="text/javascript">
+                    window.changyan.api.config({
+                        appid: 'cyu9nvd1H',
+                        conf: 'prod_d3b08d9d4b47e765df1a513bcd38865c'
+                    });
+                </script>
+            </div>
+
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="nav">none</ol>
+        
+        </div>
+      </aside>
+    
+
+
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#C#"
+                            title="C#">C#</a>
+                        
+                        <a class="tag" href="/tags/#Mono"
+                            title="Mono">Mono</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                    <li><a href="https://www.cnblogs.com/fly-100/" target="_blank">博客园 追峰人</a></li>
+                    
+                    <li><a href="https://www.zhihu.com/people/daboss007" target="_blank">知乎 李志雄</a></li>
+                    
+                    <li><a href="https://github.com/zxlii" target="_blank">Github zxlii</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js", function () {
+        anchors.options = {
+            visible: 'hover',
+            placement: 'left',
+            icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link {
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top: -0.1em;
+        }
+    }
+</style>
+
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+                    
+
+                    
+
+                    
+
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zxlii">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 追风人 2019
+                    <!-- <br>
+                    Theme by <a href="http://beantech.org">BeanTech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://www.huweihuang.com">胡伟煌</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe> -->
+                </p>
+                <!-- GoStats Simple HTML Based Code -->
+                <p class="copyright text-muted">
+                    访问数：
+                    <a target="_blank" title="web site traffic statistics" href="http://www.gostats.org"><img
+                            alt="web site traffic statistics" src="//www.gostats.org/0.png?a=701070455&ct=4&ci=41"
+                            style="border-width:0" />
+                    </a>
+                </p>
+                <!-- End GoStats Simple HTML Based Code -->
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if ($('#tag_cloud').length !== 0) {
+        async("http://www.lizhixiong.net/js/jquery.tagcloud.js", function () {
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: { start: '#bbbbee', end: '#0085a1' },
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?" + _baId;
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://www.lizhixiong.net/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="keyword"  content="">
+    <link rel="shortcut icon" href="/img/ironman-draw.png">
+    <!-- Place this tag in your head or just before your close body tag. -->
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <title>
+        
+          Unity3D跨平台原理 - 追风人 | Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://www.lizhixiong.net/article/Unity3D跨平台原理/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS --> 
+    <link rel="stylesheet" href="/css/beantech.min.css">
+
+    <link rel="stylesheet" href="/css/donate.css">
+    
+    <!-- Pygments Highlight CSS -->
+    <link rel="stylesheet" href="/css/highlight.css">
+
+    <link rel="stylesheet" href="/css/widget.css">
+
+    <link rel="stylesheet" href="/css/rocket.css">
+
+    <link rel="stylesheet" href="/css/signature.css">
+
+    <link rel="stylesheet" href="/css/toc.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+	<!-- Modified by Yu-Hsuan Yen -->
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        
+            background-image: url('/img/article_header/article_bg.jpg')
+            /*post*/
+        
+    }
+    
+</style>
+
+<header class="intro-header" >
+    <!-- Signature -->
+    <div id="signature">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                
+                    <div class="post-heading">
+                        <div class="tags">
+                            
+                              <a class="tag" href="/tags/#U3D" title="U3D">U3D</a>
+                            
+                        </div>
+                        <h1>Unity3D跨平台原理</h1>
+                        <h2 class="subheading"></h2>
+                        <span class="meta">
+                            Posted by 追风人 on
+                            2015-06-23
+                        </span>
+                    </div>
+                
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+	
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">追风人</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archive/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Modify by Yu-Hsuan Yen -->
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <p>An ahead-of-time (AOT) compiler is a <a href="http://en.wikipedia.org/wiki/Compiler" target="_blank" rel="noopener">compiler</a> that implements ahead-of-time compilation. This refers to the act of compiling an intermediate language, such as <a href="http://en.wikipedia.org/wiki/Java_bytecode" target="_blank" rel="noopener">Java bytecode</a>, .NET <a href="http://en.wikipedia.org/wiki/Common_Intermediate_Language" target="_blank" rel="noopener">Common Intermediate Language</a> (CIL), or <a href="http://en.wikipedia.org/wiki/IBM_System/38" target="_blank" rel="noopener">IBM System/38</a> or <a href="http://en.wikipedia.org/wiki/IBM_System_i" target="_blank" rel="noopener">IBM System i</a> “Technology Independent Machine Interface” code, into a system-dependent binary.</p>
+<p><strong>AOT（ahead-of-time 编译方式），就是将 像Java编译后得到的中间语言文件 变成和系统相关的 native binary。</strong></p>
+<p>Most languages with a <a href="http://en.wikipedia.org/wiki/Managed_code" target="_blank" rel="noopener">managed code</a> runtime that can be compiled to an intermediate language take advantage of <a href="http://en.wikipedia.org/wiki/Just-in-time_compilation" target="_blank" rel="noopener">just-in-time</a> (JIT)[<em>citation needed</em>]. This, briefly, compiles intermediate code into <a href="http://en.wikipedia.org/wiki/Machine_code" target="_blank" rel="noopener">machine code</a>for a native run while the intermediate code is executing, which may decrease an application’s performance. Ahead-of-time compilation eliminates the need for this step by performing the compilation before execution rather than during execution.</p>
+<p><strong>JIT（just-in-time），相当于解释型语言，运行的时候，相当于是解释一条语句执行一条语句，即将一条中间的托管的语句翻译成一条机器语句，然后执行这条机器语句。执行效率较低。</strong></p>
+<p><strong>相比JIT，AOT在运行之前就将中间托管代码翻译成了机器代码，不存在JIT的“执行期的翻译”步骤，所以执行效率比JIT高。</strong></p>
+<p>AOT compilation is mostly beneficial in cases where the <a href="http://en.wikipedia.org/wiki/Interpreter_(computing)" target="_blank" rel="noopener">interpreter</a> (which is small) is too slow or <a href="http://en.wikipedia.org/wiki/Just-in-time_compilation" target="_blank" rel="noopener">JIT</a> is too complex or introduces undesirable latencies.[<em>citation needed</em>] In most situations with fully AOT compiled programs and libraries it is possible to drop considerable fraction of runtime environment, thus saving disk space, memory and starting time. Because of this it can be useful in embedded or mobile devices.</p>
+<p><strong>AOT主要适用场合是，当解释器（中间语言翻译成机器语言）速度太慢，或JIT过于复杂，或JIT导致严重的滞后的情况。大多数情况下，启用了AOT以后的可执行程序，相比启用AOT之前，可以摒弃很多运行时环境的碎片（fraction of runtime environment），从而节省磁盘/内存空间，缩短启动时间。因此，AOT在嵌入式设备和移动设备中是很有用的。</strong></p>
+<p>AOT in most cases produces machine optimized code, just like a ‘standard’ native compiler. The difference is that AOT transforms the bytecode of an existing virtual machine into machine code. AOT compilers can perform complex and advanced code optimizations which in most cases of JITing will be considered much too costly. On the other hand AOT can’t usually perform some optimizations possible in JIT, like runtime <a href="http://en.wikipedia.org/wiki/Profile-guided_optimization" target="_blank" rel="noopener">profile-guided optimizations</a>, pseudo-<a href="http://en.wikipedia.org/wiki/Constant_propagation" target="_blank" rel="noopener">constant propagation</a> or indirect/<a href="http://en.wikipedia.org/wiki/Virtual_function" target="_blank" rel="noopener">virtual function</a> <a href="http://en.wikipedia.org/wiki/Inlining" target="_blank" rel="noopener">inlining</a>.</p>
+<p><strong>大多数情况下，AOT都可以将二进制代码针对硬件做优化，这时的AOT就很想一个真正的本地编译器，比如gcc。AOT和真正的本地编译器的不同之处在于，AOT是将现有的虚拟机的字节码转成本机二进制码，即操作对象和真正的编译器不同。AOT编译器可以执行高级的复杂的字节码的优化，这些优化对JIT来说，大多数都代价太高。另一方面，通常AOT不能执行一些JIT能做到的优化，比如 runtime profile-guided optimizations, pseudo-constant propagation or indirect/virtual function inlining。</strong></p>
+<p>一些资料:</p>
+<h1 id="il"><strong>IL</strong></h1>
+<p><strong>IL</strong>是.NET框架中中间语言**（Intermediate Language）**的缩写。使用.NET框架提供的<a href="http://baike.baidu.com/view/487018.htm" target="_blank" rel="noopener">编译器</a>可以直接将源程序编译为.exe或.dll文件，但此时编译出来的程序代码并不是CPU能直接执行的机器代码，而是一种中间语言IL（Intermediate Language）</p>
+<h3 id="优点">优点:</h3>
+<p>使用中间语言的优点有两点，一是可以实现平台无关性，既与特定CPU无关；二是<strong>只要把.NET框架某种语言编译成IL代码，就实现.NET框架中语言之间的交互操作(这就是为什么unity3D里面可以c#和js混编)</strong>。（《C#程序设计及应用教程》（第2版），<a href="http://baike.baidu.com/view/64635.htm" target="_blank" rel="noopener">马骏</a> 主编）</p>
+<p>相关词条：</p>
+<h1 id="xamarin"><a href="http://baike.baidu.com/view/10567578.htm?fr=aladdin" target="_blank" rel="noopener">Xamarin</a></h1>
+<p>Xamarin（现以被微软收购）是mono项目的一个分支,但这里面最大的区别Xamarin是商业项目.mono做为跨平台的框架已得到越来越多的商业项目的肯定,令外界担心的版权问题\可靠性\稳定性也得到证实,使用mono最大的好处是可以使用其它平台众多的项目解决方案,而不必被限制在windows平台下贫乏而又昂贵的各种解决方案.</p>
+<p><strong>在Mac OS上，因为iOS的现有限制，面向iOS的C#代码会通过AOT编译技术直接编译为ARM汇编代码。而在Android上，应用程序会转换为IL，启动时再进行JIT编译。</strong></p>
+<h1 id="mono在full-aot模式下的限制">Mono在Full AOT模式下的限制</h1>
+<p>调试时遇到一个Mono运行时异常：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`ExecutionEngineException: Attempting to JIT compile method ``&apos;...&apos;` `while` `running with --aot-only.`</span><br></pre></td></tr></table></figure>
+<p>​        最后发现原因是使用了泛型接口，导致Mono需要JIT编译，但在iOS平台中，Mono是以Full AOT模式运行的，无法使用JIT引擎，于是引发了这个异常。</p>
+<p>​        Mono的AOT和.NET的Ngen一样，都是通过提前编译来减少JIT的工作，但默认情况下AOT并不编译所有IL代码，而是在优化和JIT之间取得一个平衡。由于iOS平台禁止JIT编译，于是Mono在iOS上需要Full AOT编译和运行。即预先对程序集中的所有IL代码进行AOT编译生成一个本地代码映像，然后在运行时直接加载这个映像而不再使用JIT引擎。目前由于技术或实现上的原因在使用Full AOT时有一些限制，具体可以参考<a href="http://docs.xamarin.com/ios/about/limitations#.NET.c2.a0API.c2.a0Limitations" target="_blank" rel="noopener">MonoTouch的文档</a>，这里提几条常见的：</p>
+<ul>
+<li>不支持泛型虚方法，因为对于泛型代码，Mono通过静态分析以确定要实例化的类型并生成代码，但静态分析无法确定运行时实际调用的方法（C++也因此不支持虚模版函数）。</li>
+<li>不支持对泛型类的P/Invoke。</li>
+<li>目前不能使用反射中的Property.SetInfo给非空类型赋值。</li>
+<li>值类型作为Dictionary的Key时会有问题，实际上实现了IEquatable<t>的类型都会有此问题，因为Dictionary的默认构造函数会使用EqualityComparer<tkey>.Default作为比较器，而对于实现了IEquatable<t>的类型，EqualityComparer<tkey>.Default要通过反射来实例化一个实现了IEqualityComparer<tkey>的类（可以参考EqualityComparer<t>的实现）。 解决方案是自己实现一个IEqualityComparer<tkey>，然后使用Dictionary&lt;TKey, TValue&gt;(IEqualityComparer<tkey>)构造器创建Dictionary实例。</tkey></tkey></t></tkey></tkey></t></tkey></t></li>
+<li>由于不允许动态生成代码，不允许使用System.Reflection.Emit，不允许动态创建类型。</li>
+<li>由于不允许使用System.Reflection.Emit，无法使用DLR及基于DLR的任何语言。</li>
+<li>不要混淆了Reflection.Emit和反射，所有反射的API均可用</li>
+</ul>
+<h1 id="jit和aot">JIT和AOT：</h1>
+<p>JIT:<a href="http://en.wikipedia.org/wiki/Just-in-time_compilation" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/Just-in-time_compilation</a></p>
+<p>AOT:<a href="http://en.wikipedia.org/wiki/AOT_compiler" target="_blank" rel="noopener">http://en.wikipedia.org/wiki/AOT_compiler</a></p>
+<p><a href="http://www.mono-project.com/AOT" target="_blank" rel="noopener">http://www.mono-project.com/AOT</a></p>
+<p>那么来到U3D为何能跨平台，简而言之，其实现原理在于使用了叫CIL（Common Intermediate Language通用中间语言，也叫做MSIL微软中间语言）的一种代码指令集，CIL可以在任何支持CLI（Common Language Infrastructure，通用语言基础结构）的环境中运行，就像.NET是微软对这一标准的实现，Mono则是对CLI的又一实现。由于CIL能运行在所有支持CLI的环境中，例如刚刚提到的.NET运行时以及Mono运行时，也就是说和具体的平台或者CPU无关。这样就无需根据平台的不同而部署不同的内容了。所以到这里，各位也应该恍然大了。代码的编译只需要分为两部分就好了嘛：</p>
+<ol>
+<li>从代码本身到CIL的编译（其实之后CIL还会被编译成一种位元码，生成一个CLI assembly）</li>
+<li>运行时从CIL（其实是CLI assembly，不过为了直观理解，不必纠结这种细节）到本地指令的即时编译（这就引出了为何U3D官方没有提供热更新的原因：在iOS平台中Mono无法使用JIT引擎，而是以Full AOT模式运行的，所以此处说的额即时编译不包括IOS）</li>
+</ol>
+<h2 id="what">What？</h2>
+<p>上文也说了CIL是指令集，但是不是还是太模糊了呢？所以语文老师教导我们，描述一个东西时肯定要先从外貌写起。遵循老师的教导，我们不妨先通过工具来看看CIL到底长什么样。</p>
+<p>工具就是ilasm了。下面小匹夫写一个简单的.cs看看生成的CIL代码长什么样。</p>
+<p>C#代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Class1</span><br><span class="line">&#123;</span><br><span class="line">    public static void Main(string[] args)</span><br><span class="line">    &#123;</span><br><span class="line">        System.Console.WriteLine(&quot;hi&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>CIL代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">.class private auto ansi beforefieldinit Class1</span><br><span class="line">       extends [mscorlib]System.Object</span><br><span class="line">&#123;</span><br><span class="line">  .method public hidebysig static void  Main(string[] args) cil managed</span><br><span class="line">  &#123;</span><br><span class="line">    .entrypoint</span><br><span class="line">    // 代码大小       13 (0xd)</span><br><span class="line">    .maxstack  8</span><br><span class="line">    IL_0000:  nop</span><br><span class="line">    IL_0001:  ldstr      &quot;hi&quot;</span><br><span class="line">    IL_0006:  call       void [mscorlib]System.Console::WriteLine(string)</span><br><span class="line">    IL_000b:  nop</span><br><span class="line">    IL_000c:  ret</span><br><span class="line">  &#125; // end of method Class1::Main</span><br><span class="line"></span><br><span class="line">  .method public hidebysig specialname rtspecialname </span><br><span class="line">          instance void  .ctor() cil managed</span><br><span class="line">  &#123;</span><br><span class="line">    // 代码大小       7 (0x7)</span><br><span class="line">    .maxstack  8</span><br><span class="line">    IL_0000:  ldarg.0</span><br><span class="line">    IL_0001:  call       instance void [mscorlib]System.Object::.ctor()</span><br><span class="line">    IL_0006:  ret</span><br><span class="line">  &#125; // end of method Class1::.ctor</span><br><span class="line"></span><br><span class="line">&#125; // end of class Class1</span><br></pre></td></tr></table></figure>
+<p>好啦。代码虽然简单，但是也能说明足够多的问题。那么和CIL的第一次亲密接触，能给我们留下什么直观的印象呢？</p>
+<ol>
+<li>以“.”一个点号开头的，例如上面这份代码中的：.class、.method 。我们称之为CIL指令（directive），用于描述.NET程序集总体结构的标记。为啥需要它呢？因为你总得告诉编译器你处理的是啥吧。</li>
+<li>貌似CIL代码中还看到了private、public这样的身影。姑且称之为CIL特性（attribute）。它的作用也很好理解，通过CIL指令并不能完全说明.NET成员和类，针对CIL指令进行补充说明成员或者类的特性的。市面上常见的还有：extends，implements等等。</li>
+<li>每一行CIL代码基本都有的，对，那就是CIL操作码咯。小匹夫从网上找了一份汉化的操作码表放在<a href="http://doc.okbase.net/murongxiaopifu/archive/123512.html#fulu" target="_blank" rel="noopener">附录</a>部分，当然英文版的你的vs就有。</li>
+</ol>
+<p>直观的印象有了，但是离我们的短期目标，说清楚（或者说介绍个大概）CIL是What，甚至是终极目标，搞明白Uniyt3D为何能跨平台还有2万4千9百里的距离。</p>
+<p>好啦，话不多说，继续乱侃。</p>
+<p>参照附录中的操作码表，对照可以总结出一份更易读的表格。那就是如下的表啦。</p>
+<table>
+<thead>
+<tr>
+<th>主要操作</th>
+<th>操作数范围/条件</th>
+<th>操作数类型</th>
+<th>操作数</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>缩写</td>
+<td>全称</td>
+<td>含义</td>
+<td>缩写</td>
+<td>全称</td>
+<td>含义</td>
+<td>缩写</td>
+<td>全称</td>
+<td>含义</td>
+<td>缩写</td>
+<td>全称</td>
+<td>含义</td>
+<td></td>
+</tr>
+<tr>
+<td>ld</td>
+<td>load</td>
+<td>将操作数压到堆栈当中，相当于： push ax</td>
+<td>arg</td>
+<td>argument</td>
+<td>参数</td>
+<td>?</td>
+<td>?</td>
+<td>操作数中的数值</td>
+<td>.0</td>
+<td>?</td>
+<td>第零个参数</td>
+<td></td>
+</tr>
+<tr>
+<td>.1</td>
+<td>?</td>
+<td>第一个参数</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.2</td>
+<td>?</td>
+<td>第二个参数</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.3</td>
+<td>?</td>
+<td>第三个参数</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.s xx</td>
+<td>(short)</td>
+<td>参数xx</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>a</td>
+<td>address</td>
+<td>操作数的地址</td>
+<td>只有 .s xx，参见ldarg.s</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>loc</td>
+<td>local</td>
+<td>局部变量</td>
+<td>参见ldarg</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>fld</td>
+<td>field</td>
+<td>字段（类的全局变量）</td>
+<td>参见ldarg</td>
+<td>xx</td>
+<td>?</td>
+<td>xx字段，eg: ldfld xx</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>c</td>
+<td>const</td>
+<td>常量</td>
+<td>.i4</td>
+<td>int 4 bytes</td>
+<td>C#里面的int，其他的类型例如short需要通过conv转换</td>
+<td>.m1</td>
+<td>minus 1</td>
+<td>-1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.0</td>
+<td>?</td>
+<td>0</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.1</td>
+<td>?</td>
+<td>1</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>……</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.8</td>
+<td></td>
+<td>8</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.s</td>
+<td>(short)</td>
+<td>后面跟一个字节以内的整型数值（有符号的）</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>?</td>
+<td>?</td>
+<td>后面跟四个字节的整型数值</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.i8</td>
+<td>int 8 bytes</td>
+<td>C#里面的long</td>
+<td>?</td>
+<td>?</td>
+<td>后面跟八个字节的整型数值</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.r4</td>
+<td>real 4 bytes</td>
+<td>C#里面的float</td>
+<td>?</td>
+<td>?</td>
+<td>后面跟四个字节的浮点数值</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.r8</td>
+<td>real 8 bytes</td>
+<td>C#里面的double</td>
+<td>?</td>
+<td>?</td>
+<td>后面跟八个字节的浮点数值</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>null</td>
+<td>null</td>
+<td>空值（也就是0）</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>st</td>
+<td>store</td>
+<td>计算堆栈的顶部弹出当前值，相当于： pop ax</td>
+<td>参见ld</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>conv</td>
+<td>convert</td>
+<td>数值类型转换，仅仅用纯粹的数值类型间的转换，例如int/float等</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>.i1</td>
+<td>int 1 bytes</td>
+<td>C#里面的sbyte</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td></td>
+</tr>
+<tr>
+<td>.i2</td>
+<td>int 2 bytes</td>
+<td>C#里面的short</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.i4</td>
+<td>int 4 bytes</td>
+<td>C#里面的int</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.i8</td>
+<td>int 8 bytes</td>
+<td>C#里面的long</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.r4</td>
+<td>real 4 bytes</td>
+<td>C#里面的float</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.r8</td>
+<td>real 8 bytes</td>
+<td>C#里面的double</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.u4</td>
+<td>uint 4 bytes</td>
+<td>C#里面的uint</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>.u8</td>
+<td>uint 8 bytes</td>
+<td>C#里面的ulong</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>b/br</td>
+<td>branch</td>
+<td>条件和无条件跳转，相当于： jmp/jxx label_jump</td>
+<td>br</td>
+<td>?</td>
+<td>?</td>
+<td>无条件跳转</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>后面跟四个字节的偏移量（有符号）</td>
+</tr>
+<tr>
+<td>.s</td>
+<td>(short)</td>
+<td>后面跟一个字节的偏移量（有符号）</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>false</td>
+<td>false</td>
+<td>值为零的时候跳转</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>参见br</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>true</td>
+<td>true</td>
+<td>值不为零的时候跳转</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>b</td>
+<td>eq</td>
+<td>equal to</td>
+<td>相等</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ne</td>
+<td>not equal to</td>
+<td>不相等</td>
+<td>un</td>
+<td>unsigned or unordered</td>
+<td>无氟好的（对于整数）或者无序的（对于浮点）</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>gt</td>
+<td>greater than</td>
+<td>大于</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>lt</td>
+<td>less than</td>
+<td>小于</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>ge</td>
+<td>greater than or equal to</td>
+<td>大于等于</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>le</td>
+<td>less than or equal to</td>
+<td>小于等于</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>call</td>
+<td>call</td>
+<td>调用</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>（非虚函数）</td>
+<td>?</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>?</td>
+<td>?</td>
+<td>?</td>
+<td>virt</td>
+<td>virtual</td>
+<td>虚函数</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>在此，小匹夫想请各位认真读表，然后心中默数3个数，最后看看都能发现些什么。</p>
+<h4 id="基于堆栈">基于堆栈</h4>
+<p>如果是小匹夫的话，第一感觉就是基本每一条描述中都包含一个”栈“。不错,CIL是基于堆栈的，也就是说CIL的VM（mono运行时）是一个栈式机。这就意味着数据是推入堆栈，通过堆栈来操作的，而非通过CPU的寄存器来操作，这更加验证了其和具体的CPU架构没有关系。为了说明这一点，小匹夫举个例子好啦。</p>
+<p>大学时候学单片机（大概是8086，记不清了）的时候记得做加法大概是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">add eax,-2</span><br></pre></td></tr></table></figure>
+<p>其中的eax是啥？寄存器。所以如果CIL处理数据要通过cpu的寄存器的话，那也就不可能和cpu的架构无关了。</p>
+<p>当然，CIL之所以是基于堆栈而非CPU的另一个原因是相比较于cpu的寄存器，操作堆栈实在太简单了。回到刚才小匹夫说的大学时候曾经学过的单片机那门课程上，当时记得各种寄存器，各种标志位，各种。。。，而堆栈只需要简单的压栈和弹出，因此对于虚拟机的实现来说是再合适不过了。所以想要更具体的了解CIL基于堆栈这一点，各位可以去看一下堆栈方面的内容。这里小匹夫就不拓展了。</p>
+<h4 id="面向对象">面向对象</h4>
+<p>那么第二感觉呢？貌似附录的表中有new对象的语句呀。嗯，的确，CIL同样是面向对象的。</p>
+<p>这意味着什么呢？那就是在CIL中你可以创建对象，调用对象的方法，访问对象的成员。而这里需要注意的就是对方法的调用。</p>
+<p>回到上表中的右上角。对，就是对参数的操作部分。静态方法和实例方法是不同的哦~</p>
+<ol>
+<li>静态方法：ldarg.0么有被占用，所以参数从ldarg.0开始。</li>
+<li>实例方法：ldarg.0是被this占用的，也就是说实际上的参数是从ldarg.1开始的。</li>
+</ol>
+<p>举个例子：假设你有一个类Murong中有一个静态方法Add(int32 a, int32 b)，实现的内容就如同它的名字一样使两个数相加，所以需要2个参数。和一个实例方法TellName(string name)，这个方法会告诉你传入的名字。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class  Murong</span><br><span class="line">&#123;</span><br><span class="line">    public void TellName(string name)</span><br><span class="line">    &#123;</span><br><span class="line">        System.Console.WriteLine(name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static int Add(int a, int b)</span><br><span class="line">    &#123;</span><br><span class="line">       return a + b;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="静态方法的处理">静态方法的处理：</h4>
+<p>那么其中的静态方法Add的CIL代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//小匹夫注释一下。</span><br><span class="line">.method public hidebysig static int32  Add(int32 a,</span><br><span class="line">                                           int32 b) cil managed</span><br><span class="line">&#123;</span><br><span class="line">  // 代码大小       9 (0x9)</span><br><span class="line">  .maxstack  2</span><br><span class="line">  .locals init ([0] int32 CS$1$0000)   //初始化局部变量列表。因为我们只返回了一个int型。所以这里声明了一个int32类型。索引为0</span><br><span class="line">  IL_0000:  nop</span><br><span class="line">  IL_0001:  ldarg.0     //将索引为 0 的参数加载到计算堆栈上。</span><br><span class="line">  IL_0002:  ldarg.1     //将索引为 1 的参数加载到计算堆栈上。</span><br><span class="line">  IL_0003:  add          //计算</span><br><span class="line">  IL_0004:  stloc.0      //从计算堆栈的顶部弹出当前值并将其存储到索引 0 处的局部变量列表中。</span><br><span class="line">  IL_0005:  br.s       IL_0007</span><br><span class="line">  IL_0007:  ldloc.0     //将索引 0 处的局部变量加载到计算堆栈上。</span><br><span class="line">  IL_0008:  ret           //返回该值</span><br><span class="line">&#125; // end of method Murong::Add</span><br></pre></td></tr></table></figure>
+<p>那么我们调用这个静态函数应该就是这样咯。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Murong.Add(1, 2);</span><br></pre></td></tr></table></figure>
+<p>对应的CIL代码为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">IL_0001:  ldc.i4.1 //将整数1压入栈中</span><br><span class="line">IL_0002:  ldc.i4.2 //将整数2压入栈中</span><br><span class="line">IL_0003:  call       int32 Murong::Add(int32,</span><br><span class="line">                                       int32)  //调用静态方法</span><br></pre></td></tr></table></figure>
+<p>可见CIL直接call了Murong的Add方法，而不需要一个Murong的实例。</p>
+<h4 id="实例方法的处理">实例方法的处理：</h4>
+<p>Murong类中的实例方法TellName()的CIL代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">.method public hidebysig instance void  TellName(string name) cil managed</span><br><span class="line">&#123;</span><br><span class="line">  // 代码大小       9 (0x9)</span><br><span class="line">  .maxstack  8</span><br><span class="line">  IL_0000:  nop</span><br><span class="line">  IL_0001:  ldarg.1     //看到和静态方法的区别了吗？</span><br><span class="line">  IL_0002:  call       void [mscorlib]System.Console::WriteLine(string)</span><br><span class="line">  IL_0007:  nop</span><br><span class="line">  IL_0008:  ret</span><br><span class="line">&#125; // end of method Murong::TellName</span><br></pre></td></tr></table></figure>
+<p>看到和静态方法的区别了吗？对，第一个参数对应的是ldarg.1中的参数1，而不是静态方法中的0。因为此时参数0相当于this，this是不用参与参数传递的。</p>
+<p>那么我们再看看调用实例方法的C#代码和对应的CIL代码是如何的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//C#</span><br><span class="line">Murong murong = new Murong();</span><br><span class="line">murong.TellName(&quot;chenjiadong&quot;);</span><br></pre></td></tr></table></figure>
+<p>CIL：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">.locals init ([0] class Murong murong)   //因为C#代码中定义了一个Murong类型的变量，所以局部变量列表的索引0为该类型的引用。</span><br><span class="line">//....</span><br><span class="line">IL_0009:  newobj     instance void Murong::.ctor() //相比上面的静态方法的调用，此处new一个新对象，出现了instance方法。</span><br><span class="line">IL_000e:  stloc.0</span><br><span class="line">IL_000f:  ldloc.0</span><br><span class="line">IL_0010:  ldstr      &quot;chenjiadong&quot; //小匹夫的名字入栈</span><br><span class="line">IL_0015:  callvirt   instance void Murong::TellName(string) //实例方法的调用也有instance</span><br></pre></td></tr></table></figure>
+<p>到此，受制于篇幅所限（小匹夫不想写那么多字啊啊啊！）CIL是What的问题大致介绍一下。当然没有再拓展，以后小匹夫可能会再详细写一下这块。</p>
+<h2 id="how">How？</h2>
+<p>记得语文老师说过，写作文最重要的一点是要首尾呼应。既然咱们开篇就提出了U3D为何能跨平台的问题，那么接近文章的结尾咱们就再来</p>
+<p>提问：</p>
+<p>Q:上面的Why部分，咱们知道了U3D能跨平台是因为存在着一个能通吃的中间语言CIL，这也是所谓跨平台的前提，但是为啥CIL能通吃各大平台呢？当然可以说CIL基于堆栈，跟你CPU怎么架构的没啥关系，但是感觉过于理论化、学术化，那还有没有通俗化、工程化的说法呢？</p>
+<p>A:原因就是前面小匹夫提到过的，.Net运行时和Mono运行时。也就是说CIL语言其实是运行在虚拟机中的，具体到咱们的U3D也就是mono的运行时了，换言之mono运行的其实CIL语言，CIL也并非真正的在本地运行，而是在mono运行时中运行的，运行在本地的是被编译后生成的原生代码。当然看官博的文章，他们似乎也在开发自己的“mono”，也就是被称为脚本的未来的IL2Cpp，这种类似运行时的功能是将IL再编译成c++，再由c++编译成原生代码，据说效率提升很可观，小匹夫也是蛮期待的。</p>
+<p>这里为了“实现跨平台式的演示”，小匹夫用mac给各位做个测试好啦：</p>
+<h4 id="从c到cil">从C#到CIL</h4>
+<p>新建一个cs文件，然后使用mono来运行。这个cs文件内容如下：</p>
+<p><img src="http://doc.okbase.net/picture/addon/2015/01/11/A033502466-123512.png" alt="img"></p>
+<p>然后咱们直接在命令行中运行这个cs文件试试~</p>
+<p><img src="http://doc.okbase.net/picture/addon/2015/01/11/A033504638-123512.png_small.png" alt="img"></p>
+<p>说的很清楚，文件没有包含一个CIL映像。可见mono是不能直接运行cs文件的。假如我们把它编译成CIL呢？那么我们用mono带的mcs来编译小匹夫的Test.cs文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mcs Test.cs</span><br></pre></td></tr></table></figure>
+<p>生成了什么呢？如图：</p>
+<p><img src="http://doc.okbase.net/picture/addon/2015/01/11/A033506904-123512.png_small.png" alt="img"></p>
+<p>好像没见有叫.IL的文件生成啊？反而好像多了一个.exe文件？可是没听说Mac能运行exe文件呀？可为啥又生成了.exe呢？各位看官可能要说，小匹夫你是不是拿windows截图P的啊？嘿嘿，小匹夫可不敢。辣么真相其实就是这个exe并不是让Mac来运行的，而是留给mono运行时来运行的，换言之这个文件的可执行代码形式是CIL的位元码形态。到此，我们完成了从C#到CIL的过程。接下来就让我们运行下刚刚的成果好啦。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">`mono Test.exe`</span><br></pre></td></tr></table></figure>
+<p><img src="http://doc.okbase.net/picture/addon/2015/01/11/A033509138-123512.png_small.png" alt="img"></p>
+<p>结果是输出了一个大大的“Hi”。这里，就引出了下一个部分。</p>
+<h4 id="从cil到native-code">从CIL到Native Code</h4>
+<p>这个“HI”可是在小匹夫的MAC终端上出现的呀，那么就证明这个C#写的代码在MAC上运行的还挺“嗨”。</p>
+<p>为啥呢？为啥C#写的代码能跑在MAC上呢？这就不得不提从CIL如何到本机原生代码的过程了。Mono提供了两种编译方式，就是我们经常能看到的：JIT（Just-in-Time compilation，即时编译）和AOT（Ahead-of-Time，提前编译或静态编译）。这两种方式都是将CIL进一步编译成平台的原生代码。这也是实现跨平台的最后一步。下面就分头介绍一下。</p>
+<h4 id="jit即时编译">JIT即时编译：</h4>
+<p>从名字就能看的出来，即时编译，或者称之为动态编译，是在程序执行时才编译代码，解释一条语句执行一条语句，即将一条中间的托管的语句翻译成一条机器语句，然后执行这条机器语句。但同时也会将编译过的代码进行缓存，而不是每一次都进行编译。所以可以说它是静态编译和解释器的结合体。不过你想想机器既要处理代码的逻辑，同时还要进行编译的工作，所以其运行时的效率肯定是受到影响的。因此，Mono会有一部分代码通过AOT静态编译，以降低在程序运行时JIT动态编译在效率上的问题。</p>
+<p>不过一向严苛的IOS平台是不允许这种动态的编译方式的，这也是U3D官方无法给出热更新方案的一个原因。而Android平台恰恰相反，Dalvik虚拟机使用的就是JIT方案。</p>
+<h4 id="aot静态编译">AOT静态编译：</h4>
+<p>其实Mono的AOT静态编译和JIT并非对立的。AOT同样使用了JIT来进行编译，只不过是被AOT编译的代码在程序运行之前就已经编译好了。当然还有一部分代码会通过JIT来进行动态编译。下面小匹夫就手动操作一下mono，让它进行一次AOT编译。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//在命令行输入</span><br><span class="line">mono --aot Test.exe</span><br></pre></td></tr></table></figure>
+<p>结果：<img src="http://doc.okbase.net/picture/addon/2015/01/11/A033511373-123512.png_small.png" alt="img"></p>
+<p>从图中可以看到JIT time： 39 ms,也就是说Mono的AOT模式其实会使用到JIT，同时我们看到了生成了一个适应小匹夫的MAC的动态库Test.exe.dylib，<a href="http://xn--Linux-8w2i241as9ll5ir22b4dza.so" target="_blank" rel="noopener">而在Linux生成就是.so</a>（共享库）。</p>
+<p>AOT编译出来的库，除了包括我们的代码之外，还有被缓存的元数据信息。所以我们甚至可以只编译元数据信息而不变异代码。例如这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">//只包含元数据的信息</span><br><span class="line">mono --aot=metadata-only Test.exe</span><br></pre></td></tr></table></figure>
+<p><img src="http://doc.okbase.net/picture/addon/2015/01/11/A033513716-123512.png_small.png" alt="img"></p>
+<p>可见代码没有被包括进来。</p>
+<p>那么简单总结一下AOT的过程：</p>
+<ol>
+<li>收集要被编译的方法</li>
+<li>使用JIT进行编译</li>
+<li>发射（Emitting）经JIT编译过的代码和其他信息</li>
+<li>直接生成文件或者调用本地汇编器或连接器进行处理之后生成文件。（例如上图中使用了小匹夫本地的gcc)</li>
+</ol>
+<h4 id="full-aot">Full AOT</h4>
+<p>当然上文也说了，IOS平台是禁止使用JIT的，可看样子Mono的AOT模式仍然会保留一部分代码会在程序运行时动态编译。所以为了破解这个问题，Mono提供了一个被称为Full AOT的模式。即预先对程序集中的所有CIL代码进行AOT编译生成一个本地代码映像，然后在运行时直接加载这个映像而不再使用JIT引擎。目前由于技术或实现上的原因在使用Full AOT时有一些限制，不过这里不再多说了。以后也还会更细的分析下AOT。</p>
+<h4 id="总结">总结：</h4>
+<p>好啦，写到现在也已经到了凌晨3：04分了。感觉写的内容也差不多了。那么对本文的主题U3D为何能跨平台以及CIL做个最终的总结陈词：</p>
+<ol>
+<li>CIL是CLI标准定义的一种可读性较低的语言。</li>
+<li>以.NET或mono等实现CLI标准的运行环境为目标的语言要先编译成CIL，之后CIL会被编译，并且以位元码的形式存在（源代码—&gt;中间语言的过程）。</li>
+<li>这种位元码运行在虚拟机中(.net mono的运行时）。</li>
+<li>这种位元码可以被进一步编译成不同平台的原生代码（中间语言—&gt;原生代码的过程）。</li>
+<li>面向对象</li>
+<li>基于堆栈</li>
+</ol>
+<p>参考</p>
+<p><a href="http://m635674608.iteye.com/blog/2034796" target="_blank" rel="noopener">http://m635674608.iteye.com/blog/2034796</a></p>
+<p><a href="https://en.wikipedia.org/wiki/Ahead-of-time_compilation" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Ahead-of-time_compilation</a></p>
+<p><a href="http://blog.csdn.net/skylin19840101/article/details/44672193" target="_blank" rel="noopener">http://blog.csdn.net/skylin19840101/article/details/44672193</a></p>
+<p><a href="http://www.cnblogs.com/wonderKK/p/4095632.html" target="_blank" rel="noopener">http://www.cnblogs.com/wonderKK/p/4095632.html</a></p>
+<p><a href="http://www.cnblogs.com/me-sa/archive/2012/10/09/erlang_hipe.html" target="_blank" rel="noopener">http://www.cnblogs.com/me-sa/archive/2012/10/09/erlang_hipe.html</a></p>
+
+
+
+                <hr>
+                <!-- Pager -->
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/article/C# Unity游戏开发——Excel中的数据是如何到游戏中的 （四）/" data-toggle="tooltip" data-placement="top"
+                            title="C# Unity游戏开发——Excel中的数据是如何到游戏中的 （三）">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/article/Unity UGUI —— 鼠标穿透UI问题（Unity官方的解决方法）/" data-toggle="tooltip" data-placement="top"
+                            title="Unity UGUI —— 鼠标穿透UI问题（Unity官方的解决方法）">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+                <br>
+
+                <!--打赏-->
+                
+                <!--打赏-->
+
+                <br>
+                <!--分享-->
+                
+                <div class="social-share" data-wechat-qrcode-helper="" align="center"></div>
+                <!--  css & js -->
+                <link rel="stylesheet"
+                    href="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+                <script
+                    src="https://cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+                
+                <!--分享-->
+                <br>
+
+                <!-- require APlayer -->
+                
+
+                <!-- duoshuo Share start -->
+                
+                <!-- 多说 Share end-->
+
+                <!-- 多说评论框 start -->
+                
+                <!-- 多说评论框 end -->
+
+                <!-- disqus comment start -->
+                
+                <!-- disqus comment end -->
+
+                
+
+                            <!--PC版-->
+                <div id="SOHUCS"></div>
+                <script charset="utf-8" type="text/javascript" src="https://changyan.sohu.com/upload/changyan.js"></script>
+                <script type="text/javascript">
+                    window.changyan.api.config({
+                        appid: 'cyu9nvd1H',
+                        conf: 'prod_d3b08d9d4b47e765df1a513bcd38865c'
+                    });
+                </script>
+            </div>
+
+            <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+  
+    <style>
+      span.toc-nav-number{
+        display: none
+      }
+    </style>
+  
+    
+      <aside id="sidebar">
+        <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#il"><span class="toc-nav-number">1.</span> <span class="toc-nav-text"><strong>IL</strong></span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#优点"><span class="toc-nav-number">1.0.1.</span> <span class="toc-nav-text">&#x4F18;&#x70B9;:</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#xamarin"><span class="toc-nav-number">2.</span> <span class="toc-nav-text"><a href="http://baike.baidu.com/view/10567578.htm?fr=aladdin" target="_blank" rel="noopener">Xamarin</a></span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#mono在full-aot模式下的限制"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Mono&#x5728;Full AOT&#x6A21;&#x5F0F;&#x4E0B;&#x7684;&#x9650;&#x5236;</span></a></li><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#jit和aot"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">JIT&#x548C;AOT&#xFF1A;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#what"><span class="toc-nav-number">4.1.</span> <span class="toc-nav-text">What&#xFF1F;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#基于堆栈"><span class="toc-nav-number">4.1.0.1.</span> <span class="toc-nav-text">&#x57FA;&#x4E8E;&#x5806;&#x6808;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#面向对象"><span class="toc-nav-number">4.1.0.2.</span> <span class="toc-nav-text">&#x9762;&#x5411;&#x5BF9;&#x8C61;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#静态方法的处理"><span class="toc-nav-number">4.1.0.3.</span> <span class="toc-nav-text">&#x9759;&#x6001;&#x65B9;&#x6CD5;&#x7684;&#x5904;&#x7406;&#xFF1A;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#实例方法的处理"><span class="toc-nav-number">4.1.0.4.</span> <span class="toc-nav-text">&#x5B9E;&#x4F8B;&#x65B9;&#x6CD5;&#x7684;&#x5904;&#x7406;&#xFF1A;</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#how"><span class="toc-nav-number">4.2.</span> <span class="toc-nav-text">How&#xFF1F;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#从c到cil"><span class="toc-nav-number">4.2.0.1.</span> <span class="toc-nav-text">&#x4ECE;C#&#x5230;CIL</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#从cil到native-code"><span class="toc-nav-number">4.2.0.2.</span> <span class="toc-nav-text">&#x4ECE;CIL&#x5230;Native Code</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#jit即时编译"><span class="toc-nav-number">4.2.0.3.</span> <span class="toc-nav-text">JIT&#x5373;&#x65F6;&#x7F16;&#x8BD1;&#xFF1A;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#aot静态编译"><span class="toc-nav-number">4.2.0.4.</span> <span class="toc-nav-text">AOT&#x9759;&#x6001;&#x7F16;&#x8BD1;&#xFF1A;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#full-aot"><span class="toc-nav-number">4.2.0.5.</span> <span class="toc-nav-text">Full AOT</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#总结"><span class="toc-nav-number">4.2.0.6.</span> <span class="toc-nav-text">&#x603B;&#x7ED3;&#xFF1A;</span></a></li></ol></li></ol></li></ol></li></ol>
+        
+        </div>
+      </aside>
+    
+
+
+            <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#U3D"
+                            title="U3D">U3D</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                    <li><a href="https://www.cnblogs.com/fly-100/" target="_blank">博客园 追峰人</a></li>
+                    
+                    <li><a href="https://www.zhihu.com/people/daboss007" target="_blank">知乎 李志雄</a></li>
+                    
+                    <li><a href="https://github.com/zxlii" target="_blank">Github zxlii</a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js", function () {
+        anchors.options = {
+            visible: 'hover',
+            placement: 'left',
+            icon: 'ℬ'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link {
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top: -0.1em;
+        }
+    }
+</style>
+
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+                    
+
+                    
+
+                    
+
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/zxlii">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+
+                    
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; 追风人 2019
+                    <!-- <br>
+                    Theme by <a href="http://beantech.org">BeanTech</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    re-Ported by <a href="http://www.huweihuang.com">胡伟煌</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huweihuang&repo=hexo-theme-huweihuang&type=star&count=true" >
+                    </iframe> -->
+                </p>
+                <!-- GoStats Simple HTML Based Code -->
+                <p class="copyright text-muted">
+                    访问数：
+                    <a target="_blank" title="web site traffic statistics" href="http://www.gostats.org"><img
+                            alt="web site traffic statistics" src="//www.gostats.org/0.png?a=701070455&ct=4&ci=41"
+                            style="border-width:0" />
+                    </a>
+                </p>
+                <!-- End GoStats Simple HTML Based Code -->
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js"></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js"></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js"></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+        var d = document, t = 'script',
+            o = d.createElement(t),
+            s = d.getElementsByTagName(t)[0];
+        o.src = u;
+        if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+        s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if ($('#tag_cloud').length !== 0) {
+        async("http://www.lizhixiong.net/js/jquery.tagcloud.js", function () {
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: { start: '#bbbbee', end: '#0085a1' },
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function () {
+        var $nav = document.querySelector("nav");
+        if ($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-XXXXXXXX-X';
+    var _gaDomain = 'yoursite';
+
+    // Originial
+    (function (i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date(); a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = 'xxx';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?" + _baId;
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+	<a id="rocket" href="#top" class=""></a>
+	<script type="text/javascript" src="/js/totop.js?v=1.0.0" async=""></script>
+    <script type="text/javascript" src="/js/toc.js?v=1.0.0" async=""></script>
+<!-- Image to hack wechat -->
+<img src="http://www.lizhixiong.net/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
