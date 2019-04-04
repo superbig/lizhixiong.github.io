@@ -14,11 +14,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          Unity3D在NGUI中使用mask - 追风人 | Blog
+          Unity——动画最后几帧的事件不能被调用的问题 - 追风人 | Blog
         
     </title>
 
-    <link rel="canonical" href="http://www.lizhixiong.net/article/Unity3D在NGUI中使用mask/">
+    <link rel="canonical" href="http://www.lizhixiong.net/article/Unity——自动为动画剪辑添加事件 之 最后几帧的事件不能被调用的问题/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -90,16 +90,14 @@
                             
                               <a class="tag" href="/tags/#U3D" title="U3D">U3D</a>
                             
-                              <a class="tag" href="/tags/#NGUI" title="NGUI">NGUI</a>
-                            
-                              <a class="tag" href="/tags/#shader" title="shader">shader</a>
+                              <a class="tag" href="/tags/#动画" title="动画">动画</a>
                             
                         </div>
-                        <h1>Unity3D在NGUI中使用mask</h1>
+                        <h1>Unity——动画最后几帧的事件不能被调用的问题</h1>
                         <h2 class="subheading"></h2>
                         <span class="meta">
                             Posted by 追风人 on
-                            2014-06-12
+                            2015-12-01
                         </span>
                     </div>
                 
@@ -216,30 +214,17 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2 id="unity3d在ngui中使用mask">Unity3D在NGUI中使用mask</h2>
-<p>过程是这样的：最近一直想做一个头像的mask效果，后来发现原来unity的mask需要用shader来写，网上找了不少资料，也能实现，不过大多数都是用render texture作为相机投影的texture。然后把这个相机的图像作为一个material，然后在ngui中创建一个texture，把这个material赋给texture。怎么说呢，这种方式虽然也能实现，但是必须要创建一个相机，对于一个大型项目来说有点不切实际。一个头像加个mask多简单的一件事，肯定有更好的办法。</p>
-<p>最终还是找到了一种很好的方法，这种方法更接近想象中的方法，废话不多说了，跟我一步步做吧！</p>
-<p>首先，我们需要新建一个shader。然后给他添加下面的代码。</p>
-<p>在project试图中，右键-&gt;Create-&gt;Shader,新建一个shader，名字随便。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">Shader &quot;Unlit/Transparent Colored with mask&quot; &#123;</span><br><span class="line">  Properties &#123;</span><br><span class="line">    _MainTex (&quot;Base (RGB), Alpha (A)&quot;, 2D) = &quot;white&quot; &#123;&#125;</span><br><span class="line">    _AlphaTex (&quot;Yeahyeah&quot;, 2D) = &quot;white&quot; &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br><span class="line">  SubShader&#123;</span><br><span class="line">    LOD 100</span><br><span class="line"> </span><br><span class="line">    Tags&#123;</span><br><span class="line">      &quot;Queue&quot; = &quot;Transparent&quot;</span><br><span class="line">      &quot;IgnoreProjector&quot; = &quot;True&quot;</span><br><span class="line">      &quot;RenderType&quot; = &quot;Transparent&quot;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    Pass &#123;</span><br><span class="line">      Cull Off</span><br><span class="line">      Lighting Off</span><br><span class="line">      ZWrite Off</span><br><span class="line">      Fog &#123; Mode Off &#125;</span><br><span class="line">      Offset -1, -1</span><br><span class="line">      ColorMask RGB</span><br><span class="line">      AlphaTest Greater .01</span><br><span class="line">      Blend SrcAlpha OneMinusSrcAlpha</span><br><span class="line">      ColorMaterial AmbientAndDiffuse</span><br><span class="line"> </span><br><span class="line">      SetTexture [_MainTex] &#123;</span><br><span class="line">        Combine Texture * Primary</span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line">      SetTexture [_AlphaTex] &#123;</span><br><span class="line">        Combine previous, texture</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>顺便说下shader吧。太官方了可能不好理解，大概意思就是，在渲染的时候shader规定了某些规则，这些规则往往是用来实现某些炫酷的特效，或者为了某使些功能更高效。</p>
-<p>代码中的Properties相当于unity脚本中的公共变量，当把shader赋给某个material时这些变量就能想出来，你可以给他赋值 ，跟unity脚本基本一样。</p>
-<p>代码中的SubShader是子渲染器，这里面就能访问到前面设置的变量，这里主要是实现shader功能的地方，当然你还可以在这里面定义函数，等等，但是函数是用的一种叫Cg / HLSL的语言。</p>
-<p>Pass，是渲染通道。这里可以设置一些参数来规定渲染方式。</p>
-<p>好了基本就这样，要想具体了解shader，看unity<a href="http://docs.unity3d.com/Manual/SL-SurfaceShaders.html" target="_blank" rel="noopener">官方的解释</a>。</p>
-<p>好了我们接着做mask。如果shader代码能看懂的话，基本你也就会做了。</p>
-<p>它主要做了两件事：</p>
-<p>1，给两个texture赋值，其实就是两张图片。</p>
-<p>2，把_AlphaTex中不透明的像素和_MainTex中的像素输出，其实就相当在MainTex中抠出一个AlphaTex中不透明的那部分形状一样的图块。</p>
-<p>其实刚开始我搜到了不少shader，很多都没有提到怎么使用，下面来看一下</p>
-<p>其实很简单，点击建好的shader在inspector面板中你会看到</p>
-<p><img src="http://images.cnitblog.com/i/524836/201406/122051108426448.jpg" alt="img"></p>
-<p>从project视图中把两张图片拖上去就可以了。</p>
-<p>MainTex是你要显示的图片</p>
-<p>AlphaTex是你要抠图的形状，注意这张图除了形状可以用任何颜色以外其他必须都是透明的，而且图的大小要跟MainTex图片一样大。</p>
-<p>最后就是使用了，用NGUI创建一个Texture，把shader拖到UITexture脚本的shader变量中，你会发现兴奋的事情发生啦！！最终效果如下：</p>
-<p><img src="http://images.cnitblog.com/i/524836/201406/122057476241396.jpg" alt="img"></p>
-<p>OK，就到这里了，gook luck！</p>
+                <h2 id="问题描述">问题描述</h2>
+<p>最近在做一个根据配置表自动生成动画剪辑clip以及controller的功能.做法是根据配置表配置的动作以及每个动作的关键帧,自动为每个clip添加事件.这样做可以把动画的事件处理在游戏运行之前就计算好然后存到动画文件.anim中,可以提高游戏的运行效率,如果做的再细点,还可以自定义动画事件的传入的参数.比如act游戏中的多段攻击,这些数据一定是配到表中的,我们可以把表中的数据导入成Unity的ScriptableObject类型,然后打成.asset文件,在把他指定给AnimationEvent的objectReferenceParam参数,这样当动画播放的攻击帧并检测到攻击事件后直接把本段攻击的配置数据传入游戏运行时,可以减少不少的数据查找操作.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">private static void AddClipEvent(AnimationClip clip, ActionData data)</span><br><span class="line">&#123;</span><br><span class="line">    List atvts = new List();</span><br><span class="line">    float maxFrame = data.frameCount;</span><br><span class="line">    if (!string.IsNullOrEmpty(data.detFrames))</span><br><span class="line">    &#123;</span><br><span class="line">        string[] dets = data.detFrames.Split(&apos;,&apos;);</span><br><span class="line"> </span><br><span class="line">        for (int i = 0; i &lt; dets.Length; i++)</span><br><span class="line">        &#123;</span><br><span class="line">            int frame;</span><br><span class="line">            if (int.TryParse(dets[i], out frame))</span><br><span class="line">            &#123;</span><br><span class="line">                if (frame &gt; 0 &amp;&amp; frame &lt;= maxFrame) </span><br><span class="line">                &#123;</span><br><span class="line">                    AnimationEvent detEvt = new AnimationEvent();</span><br><span class="line">                    detEvt.functionName = GCharacter.FRAME_EVENT_NAME;</span><br><span class="line">                    detEvt.stringParameter = GCharacter.FrameType.Detec.ToString() + &quot;_&quot; + data.id + &quot;_&quot; + i;</span><br><span class="line">                    detEvt.time = frame / clip.frameRate;</span><br><span class="line">                    atvts.Add(detEvt);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    AnimationEvent endEvt = new AnimationEvent();</span><br><span class="line">    endEvt.functionName = GCharacter.FRAME_EVENT_NAME;</span><br><span class="line">    endEvt.stringParameter = GCharacter.FrameType.End.ToString() + &quot;_&quot; + data.id;</span><br><span class="line">    endEvt.time = data.frameCount / clip.frameRate;</span><br><span class="line">    atvts.Add(endEvt);</span><br><span class="line"> </span><br><span class="line">    AnimationUtility.SetAnimationEvents(clip, atvts.ToArray());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>不过在做到这的时候你会发现一个问题,那就是GCharacter.FrameType.End是最后一帧的帧事件,每当一个state切换到另一个state的时候这个帧尾的事件是不会被调用的!盯着Unity的状态机视图看了很久,终于找到了问题的所在!</p>
+<p><img src="http://images2015.cnblogs.com/blog/524836/201512/524836-20151201004456874-511608727.jpg" alt="img"></p>
+<p>Unity之所以收到很多人的青睐就是因为他给开发者实现了很多比较复杂的功能,这里就是因为两个动画过度时候的融合导致的,添加Transition的时候会默认指定一个过度时间,也就是上图中的Transition Duration,这里是0.1.</p>
+<p>所以其实就相当于上个动画播放到距离最后一帧还有0.1秒的时候开始播放下一个动画,也就是此时Unity的&quot;当前状态&quot;已经是下一个state,而上一个state的后几帧的事件也不会触发.</p>
+<p>有两种方法,一种是Transition Duration设为0,还有一种是让动画在离最后一帧还有0.1秒的时候就认为动画已经播放到最后一帧.我是用的后者,毕竟Unity&quot;动画过度的融合&quot;咱不能自己写吧,可是差0.1秒,到是可以在程序中自己控制.</p>
+<p>把这句改成这样:endEvt.time = (data.frameCount / clip.frameRate) - 0.12f;</p>
+<p>OK,完事!</p>
+<p>本文固定连接：<a href="http://www.cnblogs.com/fly-100/p/5008961.html" target="_blank" rel="noopener">http://www.cnblogs.com/fly-100/p/5008961.html</a></p>
 
 
 
@@ -248,14 +233,14 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/article/Unity StartCoroutine 和 yield return 深入研究/" data-toggle="tooltip" data-placement="top"
-                            title="Unity StartCoroutine 和 yield return 深入研究">&larr; Previous Post</a>
+                        <a href="/article/Unity 绘图性能优化 - Draw Call Batching/" data-toggle="tooltip" data-placement="top"
+                            title="Unity 绘图性能优化 - Draw Call Batching">&larr; Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/article/委托/" data-toggle="tooltip" data-placement="top"
-                            title="C# 委托">Next Post &rarr;</a>
+                        <a href="/article/Unity3D跨平台原理/" data-toggle="tooltip" data-placement="top"
+                            title="Unity3D跨平台原理">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -322,7 +307,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#unity3d在ngui中使用mask"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Unity3D&#x5728;NGUI&#x4E2D;&#x4F7F;&#x7528;mask</span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#问题描述"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">&#x95EE;&#x9898;&#x63CF;&#x8FF0;</span></a></li></ol>
         
         </div>
       </aside>
@@ -345,11 +330,8 @@
                         <a class="tag" href="/tags/#U3D"
                             title="U3D">U3D</a>
                         
-                        <a class="tag" href="/tags/#NGUI"
-                            title="NGUI">NGUI</a>
-                        
-                        <a class="tag" href="/tags/#shader"
-                            title="shader">shader</a>
+                        <a class="tag" href="/tags/#动画"
+                            title="动画">动画</a>
                         
                     </div>
                 </section>

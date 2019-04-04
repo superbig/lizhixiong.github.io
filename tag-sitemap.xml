@@ -72,13 +72,6 @@
     </url>
 
     <url>
-        <loc>http://www.lizhixiong.net/tags/U3D/</loc>
-        <lastmod>2019-04-04T17:38:09.577Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://www.lizhixiong.net/tags/UGUI/</loc>
         <lastmod>2019-04-04T17:38:09.577Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -86,15 +79,29 @@
     </url>
 
     <url>
-        <loc>http://www.lizhixiong.net/tags/C/</loc>
+        <loc>http://www.lizhixiong.net/tags/Mono/</loc>
         <lastmod>2019-04-04T17:39:49.796Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
 
     <url>
-        <loc>http://www.lizhixiong.net/tags/Mono/</loc>
-        <lastmod>2019-04-04T17:39:49.796Z</lastmod>
+        <loc>http://www.lizhixiong.net/tags/C/</loc>
+        <lastmod>2019-04-04T17:46:09.252Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.lizhixiong.net/tags/U3D/</loc>
+        <lastmod>2019-04-04T17:51:17.290Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://www.lizhixiong.net/tags/%E5%8A%A8%E7%94%BB/</loc>
+        <lastmod>2019-04-04T17:51:17.290Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
