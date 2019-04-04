@@ -14,11 +14,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          C# Unity游戏开发——Excel中的数据是如何到游戏中的 （一） - 追风人 | Blog
+          Unity 绘图性能优化 - Draw Call Batching - 追风人 | Blog
         
     </title>
 
-    <link rel="canonical" href="http://www.lizhixiong.net/article/C# Unity游戏开发——Excel中的数据是如何到游戏中的 （一）/">
+    <link rel="canonical" href="http://www.lizhixiong.net/article/Unity 绘图性能优化 - Draw Call Batching/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -71,7 +71,7 @@
 <style type="text/css">
     header.intro-header{
         
-            background-image: url('/img/article_header/article_bg.jpg')
+            background-image: url('/img/header_img/boats.jpg')
             /*post*/
         
     }
@@ -90,14 +90,14 @@
                             
                               <a class="tag" href="/tags/#U3D" title="U3D">U3D</a>
                             
-                              <a class="tag" href="/tags/#Excel数据打包" title="Excel数据打包">Excel数据打包</a>
+                              <a class="tag" href="/tags/#Draw Call Batching" title="Draw Call Batching">Draw Call Batching</a>
                             
                         </div>
-                        <h1>C# Unity游戏开发——Excel中的数据是如何到游戏中的 （一）</h1>
+                        <h1>Unity 绘图性能优化 - Draw Call Batching</h1>
                         <h2 class="subheading"></h2>
                         <span class="meta">
                             Posted by 追风人 on
-                            2015-05-29
+                            2016-04-22
                         </span>
                     </div>
                 
@@ -144,14 +144,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -214,24 +214,53 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h2 id="引言">引言</h2>
-<p>现在做游戏开发的没有几个不用Excel的，用的最多的就是策划。尤其是数值策划，Excel为用户提供强大的工具，各种快捷键，各种插件，各种函数。但是作为程序来说其实关注的不是Excel而是它最终形成的数据，而在程序中数据其实就是二进制，比如说一个int型就是4个byte，一个字母占2个byte。但是游戏中不可能把excel文件放进去（因为Excel本身就会占一部分额外的空间），也不可能把处理Excel的类库打包到程序，所以现在大多是对Excel进行读取然后将数据进行序列化并写入文件再打包，程序运行的时候直接读取数据文件在进行反序列化。</p>
-<p>这样做有几个好处：1.节省了空间。2.把和游戏无关的操作放在了游戏之外。3.游戏开发过程中用起来也比较方便，因为反序列换后的数据就是自己定义的某个类型的一个变量。3.减少了前后端通讯传输的数据量。4.方便对数据进行加密。</p>
-<p>其实这个过程的核心部分都是一次性的操作，只要实现一遍以后就可以重复使用。</p>
-<h2 id="流程">流程</h2>
-<p>实现的流程大致可以分为三个部分：1.读取Excel文件。2.将读取的数据进行序列化并写入文件。3.反序列化。#4.加密</p>
-<h2 id="读取excel">读取Excel</h2>
-<p>本来读取Excel是一件非常简单的事情，但是开始做才发现，对于C#来说Excel操作的类库很多，所以用哪个类库就成了一个问题，其实这些操作都是在游戏之外进行的类库的性能可以忽略，但是一般人肯定都喜欢用性能好一点的。</p>
-<p>另外一个问题就相对比较重要了，很多Excel类库都是基于windows开发环境的，而且还需要安装office，换到其他平台就不支持，而且Unity是换平台游戏引擎，所以基于这几点，我最后选择了一个跨平台操作Excel的开源类库<strong>ExcelReader</strong></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line">using UnityEngine;</span><br><span class="line">using UnityEditor;</span><br><span class="line">using System.Collections;</span><br><span class="line">using System;</span><br><span class="line">using System.Collections.Generic;</span><br><span class="line">using System.IO;</span><br><span class="line">using Excel;</span><br><span class="line">using System.Data;</span><br><span class="line"></span><br><span class="line">public class ExportExcel &#123;</span><br><span class="line"></span><br><span class="line">    [MenuItem(&quot;Frame/ExportExcel&quot;)]</span><br><span class="line">    public static void ExportExcelToBinary()</span><br><span class="line">    &#123;</span><br><span class="line"></span><br><span class="line">        Dictionary&lt;string, List&lt;List&lt;Property&gt;&gt;&gt; DataMap = new Dictionary&lt;string, List&lt;List&lt;Property&gt;&gt;&gt;();</span><br><span class="line">        List&lt;List&lt;Property&gt;&gt; classes;</span><br><span class="line">        List&lt;Property&gt; properties;</span><br><span class="line"></span><br><span class="line">        FileInfo info;</span><br><span class="line">        FileStream stream;</span><br><span class="line">        IExcelDataReader excelReader;</span><br><span class="line">        DataSet result;</span><br><span class="line"></span><br><span class="line">        string[] files = Directory.GetFiles(Application.dataPath + &quot;/EasyUI/ExcelFiles&quot;, &quot;*.xlsx&quot;, SearchOption.TopDirectoryOnly);</span><br><span class="line"></span><br><span class="line">        int row = 0, col = 0;</span><br><span class="line"></span><br><span class="line">        try</span><br><span class="line">        &#123;</span><br><span class="line">            foreach (string path in files)</span><br><span class="line">            &#123;</span><br><span class="line">                info = new FileInfo(path);</span><br><span class="line">                stream = info.Open(FileMode.Open, FileAccess.Read);</span><br><span class="line">                excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);</span><br><span class="line">                result = excelReader.AsDataSet();</span><br><span class="line"></span><br><span class="line">                classes = new List&lt;List&lt;Property&gt;&gt;();</span><br><span class="line"></span><br><span class="line">                int rowCount = result.Tables[0].Rows.Count;</span><br><span class="line">                int colCount = result.Tables[0].Columns.Count;</span><br><span class="line"></span><br><span class="line">                for (row = 1; row &lt; rowCount; row++)</span><br><span class="line">                &#123;</span><br><span class="line">                    properties = new List&lt;Property&gt;();</span><br><span class="line"></span><br><span class="line">                    for (col = 0; col &lt; colCount; col++)</span><br><span class="line">                    &#123;</span><br><span class="line">                        //string name = result.Tables[0].Rows[0][j].ToString();</span><br><span class="line">                        //string value = result.Tables[0].Rows[i][j].ToString();</span><br><span class="line">                        //string type = result.Tables[1].Rows[1][col].ToString();</span><br><span class="line">                        //Debug.Log(result.Tables[0].Rows[0][col].ToString()+&quot;:&quot;+result.Tables[0].Rows[row][col].ToString());</span><br><span class="line">                        properties.Add(</span><br><span class="line">                            new Property(</span><br><span class="line">                                result.Tables[0].Rows[0][col].ToString(),</span><br><span class="line">                                result.Tables[0].Rows[row][col].ToString(),</span><br><span class="line">                                result.Tables[1].Rows[1][col].ToString()</span><br><span class="line">                            ));</span><br><span class="line">                        Debug.Log(result.Tables[1].Rows[1][col].ToString());</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    classes.Add(properties);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                DataMap.Add(info.Name, classes);</span><br><span class="line">                excelReader.Close();</span><br><span class="line">                stream.Close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        catch(IndexOutOfRangeException exp)</span><br><span class="line">        &#123;</span><br><span class="line">            Debug.LogError(&quot;数组下标超出范围！&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>先把数据读到这里面Dictionary&lt;string, List&lt;List<property>&gt;&gt; DataMap；后面会讲怎么利用meta data来做映射，怎么序列化。</property></p>
-<p>还有就是Excel文件是有格式要求的哦，文件名就是类名，第一个sheet是数据从第二行开始读。第二个sheet的第一行是字段名称，第二行是字段类型，第三行的第一列是预留的类名。如下图</p>
-<p><img src="http://images0.cnblogs.com/blog2015/524836/201505/291655113919832.png" alt="img"><img src="http://images0.cnblogs.com/blog2015/524836/201505/291655271736288.png" alt="img"><img src="http://images0.cnblogs.com/blog2015/524836/201505/291656368134296.png" alt="img"></p>
-<p>还有一个Property类是为了以后映射和序列化使用的</p>
-<p><img src="http://images.cnblogs.com/OutliningIndicators/ContractedBlock.gif" alt="img">View Code</p>
-<p>看了很多帖子,比较有用的先给大家贴出来。<a href="http://www.mamicode.com/info-detail-494944.html" target="_blank" rel="noopener">http://www.mamicode.com/info-detail-494944.html</a> ， <a href="http://www.xuanyusong.com/archives/2429/" target="_blank" rel="noopener">http://www.xuanyusong.com/archives/2429/</a> ， <a href="http://www.cnblogs.com/shanyou/archive/2009/11/21/1607548.html" target="_blank" rel="noopener">http://www.cnblogs.com/shanyou/archive/2009/11/21/1607548.html</a></p>
-<p>，加密：<a href="http://wenku.baidu.com/view/031ede00964bcf84b9d57b6e.html" target="_blank" rel="noopener">http://wenku.baidu.com/view/031ede00964bcf84b9d57b6e.html</a></p>
-<p>本文固定链接：<a href="http://www.cnblogs.com/fly-100/p/4538975.html" target="_blank" rel="noopener">http://www.cnblogs.com/fly-100/p/4538975.html</a></p>
+                <h2 id="unity-绘图性能优化-draw-call-batching">Unity 绘图性能优化 - Draw Call Batching</h2>
+<p>原文Unity官方文档：<a href="http://docs.unity3d.com/Manual/DrawCallBatching.html" target="_blank" rel="noopener">http://docs.unity3d.com/Manual/DrawCallBatching.html</a></p>
+<p>转载请注明本文链接：<a href="http://www.cnblogs.com/fly-100/p/5422734.html" target="_blank" rel="noopener">http://www.cnblogs.com/fly-100/p/5422734.html</a></p>
+<h2 id="draw-call-batching">Draw Call Batching</h2>
+<p>在屏幕上绘制一个物体，U3D引擎必须向绘图API（openGL或者D3D）发起一次DrawCall。这些DrawCall往往是昂贵的，当绘图API为每个DrawCall做一些重要的事情，引起GPU的性能消耗较高。<br>
+这些消耗大部分是因为DrawCall结束的状态切换引起的（比如，从一个材质切换到另一个材质），因为这会引发昂贵显卡驱动的验证和变换步骤。</p>
+<p>Unity使用多种技术来解决这个问题：</p>
+<ul>
+<li>静态Batching：把静态的物体合并成一个大meshes，然后用更快的方法渲染他们。</li>
+<li>动态Batching：对于足够小的meshesh，变换他们的顶点在CPU上，将一些相似的组合到一起，在一个go中绘制。</li>
+</ul>
+<p>内建的Baching相对于手动合并物体到一起有几个好处（值得注意的是，这些对象仍可以被单独销毁）。<br>
+但是他也有它的缺点（静态Batching会导致内存和存储的开销，动态Batching会导致CPU开销）。</p>
+<h2 id="material-setup-for-batching">Material Setup For Batching</h2>
+<p>只有共享同一个材质的物体才能被Batched在一起。如果，你想达到一个好的batching，你需要竟可能多的在不同物体中共享材质。</p>
+<p>如果你有两个同样的材质但是他们的textures不同，你可以合并这些textures到一个大texture - 这个过程经常被叫做texture atlasing。一旦textures在同一个图集中，你就可以使用一个材质来代替了。</p>
+<p>如果你需要在脚本中访问共享了的材质，有一个很重的点需要注意：修改Renderer.material属性会创建一个当前材质的副本。所以，作为替换方案，你应该使用Rednerer.sharedMaterial以保证材质被共享。</p>
+<p>当渲染阴影投射的时候，即使他们的材质是不同的，也经常被batched到一起。只要材质中的数值在shadow pass是相同的，即使阴影投射有不同的材质，他们也可以使用动态batching。举个例子，许多箱可以使用具有不同的texture的材质，但对于阴影投射渲染 texture是不相关 - 在这种情况下，他们可以被batched到在一起。</p>
+<h2 id="dynamic-batching">Dynamic Batching</h2>
+<p>Unity可以自动batch移动物体到相同的draw call，如果它们具有相同的材质和满足其它标准。动态Batching是自动完成的，不需要你做额外的事情。</p>
+<ul>
+<li>Batching 动态的物体每个顶点会有某些开销，所以batching只适用于定点数小于900的meshes。
+<ul>
+<li>如果你得shader使用了顶点位置，法线和单独的UV，那么你可以batch 300 个顶点;如果你得shader使用了顶点位置，法线，UV0，UV1，和正切，只能batch 180个顶点。</li>
+<li>这个限制的数量将来有可能会变化。</li>
+</ul>
+</li>
+<li>如果物体包含镜像变换，他们将不会被batched，例如，object A 的scale 为 +1 object B 的scale 为-1，就不能batched到一起。</li>
+<li>使用不同材质的实例，即使他们实质上是相同的，也会导致两个物体不能被batched到一起。阴影投射除外。</li>
+<li>具有光照贴图的对象有额外的渲染参数：光照索引和 偏移/放缩 的光照。所以一般动态lightmapped对象应指向完全相同的光照贴图位置然后再进行batch。</li>
+<li>多通道的shader将不会被batching
+<ul>
+<li>几乎所有的Unity shader都支持前置渲染几个灯光，有效的为他们做更多的通道。“额外的逐像素的灯光”的draw call 将不会被batched。</li>
+<li>传统的延迟渲（逐通道光照）染通道禁用了动态batching，因为它必须绘制两次。</li>
+</ul>
+</li>
+</ul>
+<p>由于它的工作原理是变换所有的物体的顶点到CPU的世界坐标中，所以它仅仅在它的工作（变换到cpu的世界坐标）比做一次“draw call”小的时候才能起到好的作用。究竟一个DrawCall有多昂贵取决于诸多因素，主要是所用的绘图API。例如，在控制台或当前流<br>
+行的APIs 例如Apple Metal DrawCall的开销一般比较低，所以一般动态batching不会达到好的效果。</p>
+<h2 id="static-batching">Static Batching</h2>
+<p>静态batching允许引擎减少draw call适用于任何大小的几何（假设没有移动和共享材质）。大部分情况下他比动态batching更高效 ，但是它会占用更多的内存。</p>
+<p>为了使静态batching更好的获益，你需要明确的指定游戏中某些物体是静态的而且不会移动，旋转或者缩放。这样做，你可以在Inspector界面中的“Static”选项（chekbox）标记物体为static：</p>
+<p><img src="http://docs.unity3d.com/uploads/Main/StaticTagInspector.png" alt="img"></p>
+<p>使用静态batching将需要额外的内存来存储合并后的几何信息。如果几个物体在静态batching之前共享同一个几何图元，那么这个几何图元将会为每个物体复制一份，无论在Editor中还是runtime中都是如此。这不是一个好方法 - 有时候为了保持更小的内存占用量，你必须牺牲渲染性能为了避免一些物体的静态batching。例如，在一个稠密的森林中，标记树木为static会产生严重的内存影响。</p>
+<p>在内部，静态batching的原理是变换这些静态物体到世界控件然后为他们建立一个很大顶点+索引 缓冲区。然后所有显示的物体都放到一个batch，一系列“便宜的”draw call就完成了，这期间几乎没有状态切换（state change）。所以 从技术上来讲 这并没有节省“3D API draw call”，但是他节省了他们之间的状态切换（状态切换才是罪魁祸首）。</p>
+<h2 id="other-batching-related-tips">Other Batching Related Tips</h2>
+<p>目前，只有网格渲染才被batched。像 skinned meshes，cloth，拖尾渲染器（Trail Renderer）和其他类型的渲染组件是不被batched的。半透明shader为了做透明度的工作，经常需要物体以从后到前的顺序进行渲染。Unity首先会对物体进行排序，然后试着batch他们 - 因为这个顺序是严格限制的，这就意味着 相对于不透明物体来说，会有很少的batching产生。相对调用draw call来说，手动合并比较近的物体可能是一个非常不错的选择。例如，许多抽屉的静态柜子合并成一个mesh经常是有道理的，无论是在3D建模软件中还是使用Mesh.CombineMeshaes.</p>
 
 
 
@@ -240,14 +269,14 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/article/C# Unity游戏开发——Excel中的数据是如何到游戏中的 （二）/" data-toggle="tooltip" data-placement="top"
-                            title="C# Unity游戏开发——Excel中的数据是如何到游戏中的 （二）">&larr; Previous Post</a>
+                        <a href="/article/UGUI batch 规则和性能优化/" data-toggle="tooltip" data-placement="top"
+                            title="UGUI batch 规则和性能优化原则">&larr; Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/article/Unity3D在NGUI中使用mask/" data-toggle="tooltip" data-placement="top"
-                            title="Unity3D在NGUI中使用mask">Next Post &rarr;</a>
+                        <a href="/article/Unity3D跨平台原理/" data-toggle="tooltip" data-placement="top"
+                            title="Unity3D跨平台原理">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -314,7 +343,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#引言"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">&#x5F15;&#x8A00;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#流程"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">&#x6D41;&#x7A0B;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#读取excel"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">&#x8BFB;&#x53D6;Excel</span></a></li></ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#unity-绘图性能优化-draw-call-batching"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Unity &#x7ED8;&#x56FE;&#x6027;&#x80FD;&#x4F18;&#x5316; - Draw Call Batching</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#draw-call-batching"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">Draw Call Batching</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#material-setup-for-batching"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">Material Setup For Batching</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#dynamic-batching"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">Dynamic Batching</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#static-batching"><span class="toc-nav-number">5.</span> <span class="toc-nav-text">Static Batching</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#other-batching-related-tips"><span class="toc-nav-number">6.</span> <span class="toc-nav-text">Other Batching Related Tips</span></a></li></ol>
         
         </div>
       </aside>
@@ -337,8 +366,8 @@
                         <a class="tag" href="/tags/#U3D"
                             title="U3D">U3D</a>
                         
-                        <a class="tag" href="/tags/#Excel数据打包"
-                            title="Excel数据打包">Excel数据打包</a>
+                        <a class="tag" href="/tags/#Draw Call Batching"
+                            title="Draw Call Batching">Draw Call Batching</a>
                         
                     </div>
                 </section>

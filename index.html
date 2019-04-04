@@ -134,14 +134,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -310,9 +310,9 @@
 
 <div class="post-preview">
 
-    <a href="/article/C# Unity游戏开发——Excel中的数据是如何到游戏中的 （四）/">
+    <a href="/article/Unity——Excel中的数据是如何到游戏中的 （四）/">
         <h2 class="post-title">
-            C# Unity游戏开发——Excel中的数据是如何到游戏中的 （三）
+            C# Unity游戏开发——Excel中的数据是如何到游戏中的 （四）
         </h2>
         <h3 class="post-subtitle">
             
@@ -335,6 +335,75 @@
               <a href="/tags/#U3D" title="U3D">U3D</a>
             
               <a href="/tags/#Excel数据打包" title="Excel数据打包">Excel数据打包</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/UGUI batch 规则和性能优化/">
+        <h2 class="post-title">
+            UGUI batch 规则和性能优化原则
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            UGUI batch 规则和性能优化
+(基础) Unity 绘图性能优化 - Draw Call Batching : http://docs.unity3d.com/Manual/DrawCallBatching.html
+基本原则
+1.名词
+1）Batch 单词 google 翻译的解释是：批量、批次。
+　　2）Stats中的Batches参数：意思是batching后产生的批次数。（其......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 追风人 on
+            2016-05-13
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#U3D" title="U3D">U3D</a>
+            
+              <a href="/tags/#UGUI" title="UGUI">UGUI</a>
+            
+        </div>
+    
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/article/Unity 绘图性能优化 - Draw Call Batching/">
+        <h2 class="post-title">
+            Unity 绘图性能优化 - Draw Call Batching
+        </h2>
+        <h3 class="post-subtitle">
+            
+        </h3>
+        <div class="post-content-preview">
+            Unity 绘图性能优化 - Draw Call Batching
+原文Unity官方文档：http://docs.unity3d.com/Manual/DrawCallBatching.html
+转载请注明本文链接：http://www.cnblogs.com/fly-100/p/5422734.html
+Draw Call Batching
+在屏幕上绘制一个物体，U3D引擎必须向绘图AP......
+        </div>
+    </a>
+    
+        <p class="post-meta" style="margin: 10px 0;">
+            Posted by 追风人 on
+            2016-04-22
+        </p>
+        <div class="tags">
+            
+              <a href="/tags/#U3D" title="U3D">U3D</a>
+            
+              <a href="/tags/#Draw Call Batching" title="Draw Call Batching">Draw Call Batching</a>
             
         </div>
     
@@ -406,7 +475,7 @@
 
 <div class="post-preview">
 
-    <a href="/article/C# 堆栈和堆 Heap & Stack/">
+    <a href="/article/堆栈和堆 Heap & Stack/">
         <h2 class="post-title">
             C# 堆栈和堆 Heap & Stack
         </h2>
@@ -470,69 +539,6 @@
 </div>
 <hr>
 
-<div class="post-preview">
-
-    <a href="/article/C# Unity游戏开发——Excel中的数据是如何到游戏中的 （三）/">
-        <h2 class="post-title">
-            C# Unity游戏开发——Excel中的数据是如何到游戏中的 （三）
-        </h2>
-        <h3 class="post-subtitle">
-            
-        </h3>
-        <div class="post-content-preview">
-            本帖是延续的：C# Unity游戏开发——Excel中的数据是如何到游戏中的 （二）
-前几天有点事情所以没有继续更新，今天我们接着说。上个帖子中我们看到已经把Excel数据生成了.bin的文件，不过其实这样到游戏中还是不能用的。主要有两个方面，1.bin文件的后缀使我们随便取的名字，但是这种文件Unity不买账。因为Unity中的二进制文件必须是以.bytes命名的。2.在写文件之前其实还可......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by 追风人 on
-            2015-06-06
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#U3D" title="U3D">U3D</a>
-            
-              <a href="/tags/#Excel数据打包" title="Excel数据打包">Excel数据打包</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
-<div class="post-preview">
-
-    <a href="/article/C# Unity游戏开发——Excel中的数据是如何到游戏中的 （二）/">
-        <h2 class="post-title">
-            C# Unity游戏开发——Excel中的数据是如何到游戏中的 （二）
-        </h2>
-        <h3 class="post-subtitle">
-            
-        </h3>
-        <div class="post-content-preview">
-            本帖是延续的：C# Unity游戏开发——Excel中的数据是如何到游戏中的 （一）
-引言
-上个帖子主要是讲了如何读取Excel，本帖主要是讲述读取的Excel数据是如何序列化成二进制的，考虑到现在在手游中应用很广泛的序列化技术Google的ProtoBuf,所以本文也是按照ProtoBuf的方式来操作的。ProtoBuf是一个开源库，简单来说ProtoBuf就是一个能使序列化的数据变得更小......
-        </div>
-    </a>
-    
-        <p class="post-meta" style="margin: 10px 0;">
-            Posted by 追风人 on
-            2015-05-30
-        </p>
-        <div class="tags">
-            
-              <a href="/tags/#U3D" title="U3D">U3D</a>
-            
-              <a href="/tags/#Excel数据打包" title="Excel数据打包">Excel数据打包</a>
-            
-        </div>
-    
-
-</div>
-<hr>
-
 
 
 <!-- Pager -->
@@ -574,7 +580,17 @@
     <div class="tags">
         
             
-            <a href="/tags/#U3D" title="U3D" rel="8">U3D</a>
+            <a href="/tags/#U3D" title="U3D" rel="11">U3D</a>
+            
+        
+            
+            <a href="/tags/#UGUI" title="UGUI" rel="3">UGUI</a>
+            
+        
+            
+        
+            
+        
             
         
             
@@ -585,12 +601,6 @@
         
             
         
-            
-        
-            
-        
-            
-            <a href="/tags/#UGUI" title="UGUI" rel="2">UGUI</a>
             
         
             
@@ -668,11 +678,11 @@
         </li>
       
         <li>
-          <a href="/article/C# Unity游戏开发——Excel中的数据是如何到游戏中的 （四）/">C# Unity游戏开发——Excel中的数据是如何到游戏中的 （三）</a>
+          <a href="/article/Unity——Excel中的数据是如何到游戏中的 （四）/">C# Unity游戏开发——Excel中的数据是如何到游戏中的 （四）</a>
         </li>
       
         <li>
-          <a href="/article/Unity3D跨平台原理/">Unity3D跨平台原理</a>
+          <a href="/article/UGUI batch 规则和性能优化/">UGUI batch 规则和性能优化原则</a>
         </li>
       
     </ul>
@@ -699,7 +709,7 @@
         
     <h5>ARCHIVES</h5>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">1</span></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/04/">April 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/04/">April 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">May 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">April 2016</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/06/">June 2015</a><span class="archive-list-count">5</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2015/05/">May 2015</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/08/">August 2014</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2014/06/">June 2014</a><span class="archive-list-count">1</span></li></ul>
     </div>
 
         <hr>

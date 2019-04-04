@@ -14,11 +14,11 @@
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>
         
-          C# Unity游戏开发——Excel中的数据是如何到游戏中的 （三） - 追风人 | Blog
+          UGUI batch 规则和性能优化原则 - 追风人 | Blog
         
     </title>
 
-    <link rel="canonical" href="http://www.lizhixiong.net/article/C# Unity游戏开发——Excel中的数据是如何到游戏中的 （三）/">
+    <link rel="canonical" href="http://www.lizhixiong.net/article/UGUI batch 规则和性能优化/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -71,7 +71,7 @@
 <style type="text/css">
     header.intro-header{
         
-            background-image: url('/img/article_header/article_bg.jpg')
+            background-image: url('/img/header_img/boats.jpg')
             /*post*/
         
     }
@@ -90,14 +90,14 @@
                             
                               <a class="tag" href="/tags/#U3D" title="U3D">U3D</a>
                             
-                              <a class="tag" href="/tags/#Excel数据打包" title="Excel数据打包">Excel数据打包</a>
+                              <a class="tag" href="/tags/#UGUI" title="UGUI">UGUI</a>
                             
                         </div>
-                        <h1>C# Unity游戏开发——Excel中的数据是如何到游戏中的 （三）</h1>
+                        <h1>UGUI batch 规则和性能优化原则</h1>
                         <h2 class="subheading"></h2>
                         <span class="meta">
                             Posted by 追风人 on
-                            2015-06-06
+                            2016-05-13
                         </span>
                     </div>
                 
@@ -144,14 +144,14 @@
 
                         
                         <li>
-                            <a href="/archive/">Archives</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/archive/">Archives</a>
                         </li>
                         
                     
@@ -214,17 +214,33 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <p>本帖是延续的：<a href="http://www.cnblogs.com/fly-100/p/4541211.html" target="_blank" rel="noopener">C# Unity游戏开发——Excel中的数据是如何到游戏中的 （二）</a></p>
-<p>前几天有点事情所以没有继续更新，今天我们接着说。上个帖子中我们看到已经把Excel数据生成了.bin的文件，不过其实这样到游戏中还是不能用的。主要有两个方面，1.bin文件的后缀使我们随便取的名字，但是这种文件Unity不买账。因为Unity中的二进制文件必须是以.bytes命名的。2.在写文件之前其实还可以对二进制进行压缩，这样可以最大化节省设备空间。也就是说我们在生成数据实例后还需要做以下几件事：序列化 -&gt; 压缩 -&gt; 写文件.</p>
-<p>方式和上帖中的方式基本相同，但是因为我们要对序列化的数据进行压缩，所以不能直接把数据序列化进文件流，二是序列化进一个MemoryStream然后取出二进制数据压缩后再进行写文件。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MemoryStream ms = new MemoryStream();</span><br><span class="line">Serializer.Serialize&lt;StaticData&gt;(ms, (StaticData)staticData);</span><br><span class="line">byte[] byts = ms.ToArray();</span><br><span class="line">System.IO.FileStream stream1 = new System.IO.FileStream(Application.dataPath + &quot;/Resources/StaticDatas.bytes&quot;, System.IO.FileMode.Create);</span><br><span class="line">System.IO.BinaryWriter writer = new System.IO.BinaryWriter(stream1);</span><br><span class="line">writer.Write(GZIP.Encode(byts));</span><br><span class="line">writer.Close();</span><br><span class="line">stream1.Close();</span><br></pre></td></tr></table></figure>
-<p>哦啦，加上这几句就Ok了。说明一下我们使用了ICSharpCode.SharpZipLib.GZip这个dll，GZIP的使用方法可以参考这个地址 <a href="http://community.sharpdevelop.net/forums/t/11005.aspx%EF%BC%8C%E8%BF%99%E9%87%8C%E6%88%91%E5%86%99%E4%BA%86%E4%B8%AAGZIP%E5%B7%A5%E5%85%B7%E7%B1%BB%E5%B0%B1%E4%B8%A4%E4%B8%AA%E6%96%B9%E6%B3%95" target="_blank" rel="noopener">http://community.sharpdevelop.net/forums/t/11005.aspx，这里我写了个GZIP工具类就两个方法</a></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">public static byte[] Encode(byte[] bin)</span><br><span class="line">    &#123;</span><br><span class="line">        MemoryStream ms = new MemoryStream();</span><br><span class="line">        GZipOutputStream gzp = new GZipOutputStream(ms);</span><br><span class="line">        gzp.Write(bin, 0, bin.Length);</span><br><span class="line">        gzp.Close();</span><br><span class="line">        return ms.ToArray();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static byte[] Decode(byte[] bin)</span><br><span class="line">    &#123;</span><br><span class="line">        GZipInputStream gzp = new GZipInputStream(new MemoryStream(bin));</span><br><span class="line">        MemoryStream re = new MemoryStream();</span><br><span class="line">        int count = 0;</span><br><span class="line">        byte[] data = new byte[4096];</span><br><span class="line">        while ((count = gzp.Read(data, 0, data.Length)) != 0)</span><br><span class="line">        &#123;</span><br><span class="line">            re.Write(data, 0, count);</span><br><span class="line">        &#125;</span><br><span class="line">        return re.ToArray();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
-<p>然后，我们在看看游戏中是怎么用的。使用也很简单，因为前面已经把类什么的都生成好了，所以，看代码把。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">byte[] bytes = (Resources.Load(&quot;StaticDatas&quot;) as TextAsset).bytes;</span><br><span class="line">MemoryStream ms = new MemoryStream(GZIP.Decode(bytes));</span><br><span class="line">StaticData data = Serializer.Deserialize&lt;StaticData&gt;(ms);</span><br></pre></td></tr></table></figure>
-<p>现在我们游戏中就能看到数据了，使用的时候直接data.就可以啦。</p>
-<p>哦了，至此本课题结束。</p>
-<p>每个人都会经历从不会到会的过程，如果有什么纰漏还请大家多指教！谢谢啦！</p>
+                <h2 id="ugui-batch-规则和性能优化">UGUI batch 规则和性能优化</h2>
+<p>(基础) Unity 绘图性能优化 - Draw Call Batching : <a href="http://docs.unity3d.com/Manual/DrawCallBatching.html" target="_blank" rel="noopener">http://docs.unity3d.com/Manual/DrawCallBatching.html</a></p>
+<h2 id="基本原则">基本原则</h2>
+<p>1.名词</p>
+<p>1）Batch 单词 google 翻译的解释是：批量、批次。<br>
+　　2）Stats中的Batches参数：意思是batching后产生的批次数。（其实每一个批次就会调用一次DrawCall）<br>
+　　3）Unity官方文档中的batching是指batch操作和batching技术的称呼。（这里的batching是指“将符合条件的mesh通过CPU变换到统一的世界坐标中”这个操作，也就是合并mesh为一个批次的意思）</p>
+<p>2.UGUI 中所有显示物体的网格都是自己填充的，例如Image，UGUI会自动生成四个顶点，和代表两个三角形的顶点索引。所有显示物体如果不设置它的material都会使用同一个默认材质（shader：“UI/Default”,color:RGBA(1,1,1,1),pass count:1,render queue:3000）</p>
+<p>3.所以，根据官方文档DrawCallBatching可知，UGUI非常符合DynamicBatching。但是有一点是不符合的那就是UI的图片，所以我们可以把图片打成一张大图集来达到DynamicBatching的效果。这样就能减少batching后的batches个数，也就减少了DrawCall次数。</p>
+<p>4.因为UI部分涉及的图片比较多，如果打一个图集在提交到GPU的时候会占用很大的内存，所以一般UI图集都会根据一定的规则进行，texture atlasing。</p>
+<p>5.所以一般我们看到的UGUI优化方案，都是基于这些点来说的。这些知识点明白了，才知道为什么要做texture atlasing，为什么要分层，什么时候要合并等等。</p>
+<h2 id="ugui排序规则">UGUI排序规则</h2>
+<p>1.相邻的层级如果它们的texture在一个atlas中，就会被batching到一起。<br>
+2.在同一个层级区间并且没有交叉区域的物体（遮挡会按组件的transform的矩形区域计算），如果texture在一个atlas中，就会被batching到一起。</p>
+<h2 id="我们要做的事">我们要做的事</h2>
+<p>1.对于atlas总来的来说就是让同一时刻，UI中平均包含的atlas尽可能少。<br>
+经常用的图片要打成一个atlas。<br>
+2.其他atlas按功能划分。比如，背包界面，除了公用图集中出现的元素以外，所有出现的图片都打成一个atlas。<br>
+3.可重用的组件尽量在前期就都考虑到，因为到后期可能会产生混乱，同一个按钮在A界面出现也在B界面出现。（当然除了为了减少draw call这么做以外）<br>
+4.如果在某种情况下对顶点数限制不高，可以考虑将图片做成对称的，然后用原图的一半拼出想要的效果</p>
+<p>5.对于drawcall来说，我们UI中有N层，N越大越靠前，会遮住后面的组件。我们从0到N数，然后看每个组件的材质，我们要尽量让这个材质变化的次数减少。<br>
+6.相同图集的组件在不影响最终效果的情况下尽量使得相同图集的组件相邻。<br>
+7.相同字体的文本控件在不影响最终效果的情况下劲量使得相同字体的组件相邻。<br>
+8.对于不同的图集尽量不要去穿插，字体也是一样（纵向交叉，Herichy中的顺序）。<br>
+9.如果UI元素可以没有交叉区域尽量不交叉，特别是文字。（横向交叉，矩形区域的交叉）<br>
+10.如果可能的话可以把层叠交叉的文字做到图片中</p>
+<p>11.如果不用mask可以实现的功能尽量不用。Mask组件用到了透明，所以他会被绘制两次。所以，带mask的组件不适用dynamic batching的规则。</p>
 
 
 
@@ -233,14 +249,14 @@
                 <ul class="pager">
                     
                     <li class="previous">
-                        <a href="/article/Unity UGUI —— 无限循环List/" data-toggle="tooltip" data-placement="top"
-                            title="Unity UGUI —— 无限循环List">&larr; Previous Post</a>
+                        <a href="/article/Unity——Excel中的数据是如何到游戏中的 （四）/" data-toggle="tooltip" data-placement="top"
+                            title="C# Unity游戏开发——Excel中的数据是如何到游戏中的 （四）">&larr; Previous Post</a>
                     </li>
                     
                     
                     <li class="next">
-                        <a href="/article/C# Unity游戏开发——Excel中的数据是如何到游戏中的 （二）/" data-toggle="tooltip" data-placement="top"
-                            title="C# Unity游戏开发——Excel中的数据是如何到游戏中的 （二）">Next Post &rarr;</a>
+                        <a href="/article/Unity 绘图性能优化 - Draw Call Batching/" data-toggle="tooltip" data-placement="top"
+                            title="Unity 绘图性能优化 - Draw Call Batching">Next Post &rarr;</a>
                     </li>
                     
                 </ul>
@@ -307,7 +323,7 @@
         <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-          <ol class="nav">none</ol>
+          <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#ugui-batch-规则和性能优化"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">UGUI batch &#x89C4;&#x5219;&#x548C;&#x6027;&#x80FD;&#x4F18;&#x5316;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#基本原则"><span class="toc-nav-number">2.</span> <span class="toc-nav-text">&#x57FA;&#x672C;&#x539F;&#x5219;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#ugui排序规则"><span class="toc-nav-number">3.</span> <span class="toc-nav-text">UGUI&#x6392;&#x5E8F;&#x89C4;&#x5219;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#我们要做的事"><span class="toc-nav-number">4.</span> <span class="toc-nav-text">&#x6211;&#x4EEC;&#x8981;&#x505A;&#x7684;&#x4E8B;</span></a></li></ol>
         
         </div>
       </aside>
@@ -330,8 +346,8 @@
                         <a class="tag" href="/tags/#U3D"
                             title="U3D">U3D</a>
                         
-                        <a class="tag" href="/tags/#Excel数据打包"
-                            title="Excel数据打包">Excel数据打包</a>
+                        <a class="tag" href="/tags/#UGUI"
+                            title="UGUI">UGUI</a>
                         
                     </div>
                 </section>
